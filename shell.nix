@@ -33,7 +33,9 @@ in
       pip install jupyter_contrib_nbextensions --user > /dev/null 2>&1
       jupyter contrib nbextension install --user > /dev/null 2>&1
       jupyter nbextension enable spellchecker/main > /dev/null 2>&1
-      pip install --user "black[jupyter]"
+
       pip install --user nbqa
+      pip install --user tqdm
+      pip install --user modAL
     '';
   }))
