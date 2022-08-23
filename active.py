@@ -82,14 +82,14 @@ def igs_query(distance_transformer, model, x_pool):
 @curry
 def evaluate_item(oracle, x_pool, x_test, y_test, iterations, item):
     name, learner = item
-    print('evaluating', name)
     return name, evaluate_learner(oracle, x_pool, x_test, y_test, iterations, learner)
 
 @curry
 def one_round(x_data, y_data, iterations, seed, make_learners, oracle_func, props):
     x_pool, x_test, x_train, y_pool, y_test, y_train, indices_pool, indices_test, indices_train = three_way_split(x_data, y_data, props, seed)
-    print('indices_test', indices_test)
-    print('indices_train', indices_train)
+    print(x_pool.shape)
+    print(x_test.shape)
+    print(x_train.shape)
     oracle = oracle_func(x_pool, y_pool)
     eval_item = evaluate_item(oracle, x_pool, x_test, y_test, iterations)
     return itemmap(eval_item, make_learners(x_train, y_train))
