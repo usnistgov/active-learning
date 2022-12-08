@@ -11,7 +11,20 @@ let
   pymkssrc = builtins.fetchTarball "https://github.com/materialsinnovation/pymks/archive/${pymksVersion}.tar.gz";
   pymks = pypkgs.callPackage "${pymkssrc}/default.nix" { graspi = null; };
   pypkgs = pkgs.python3Packages;
-  extra = with pypkgs; [ black pylint flake8 ipywidgets zarr pymks h5py ];
+  hdfdict = pypkgs.buildPythonPackage rec {
+    pname = "hdfdict";
+    version = "0.3.1";
+    src = pkgs.fetchurl {
+      url="https://github.com/SiggiGue/hdfdict/archive/v${version}.tar.gz";
+      sha256 = "sha256-+uAhoBktRYG8qFgkFsM6AjhgOYYME2XP8EFb5nKfWHs=";
+    };
+    propagatedBuildInputs = with pypkgs; [
+      h5py
+      pyyaml
+    ];
+  };
+  extra = with pypkgs; [ black pylint flake8 ipywidgets zarr pymks h5py hdfdict ];
+
 in
   (pymks.overridePythonAttrs (old: rec {
 
