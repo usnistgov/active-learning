@@ -1,3 +1,11 @@
 misc
 dask-worker-space
 .local
+*.npz
+*.h5
+*.zarr
+*.npy
+*.vtk
+hao.ipynb
+*.npz
+shuffled/
