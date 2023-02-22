@@ -9,6 +9,8 @@ from modAL.models import ActiveLearner, CommitteeRegressor, BayesianOptimizer
 from modAL.disagreement import max_std_sampling
 from modAL.models import BayesianOptimizer
 from modAL.acquisition import max_EI
+import matplotlib.pyplot as plt
+from pymks.fmks.plot import fmap, _plot_ax
 
 
 def split_on_ids(arr, ids):
@@ -210,3 +212,67 @@ def make_ensemble(x_train, y_train, model_func):
     ensemble_learner.score = types.MethodType(score, ensemble_learner)
 
     return ensemble_learner
+
+
+
+def plot_microstructures(
+    *arrs, titles=(), cmap=None, colorbar=True, showticks=False, figsize=(5, 5)
+):
+    """Plot a set of microstructures side-by-side
+
+    Args:
+      arrs: any number of 2D arrays to plot
+      titles: a sequence of titles with len(*arrs)
+      cmap: any matplotlib colormap
+
+    >>> import numpy as np
+    >>> np.random.seed(1)
+    >>> x_data = np.random.random((2, 10, 10))
+    >>> fig = plot_microstructures(
+    ...     x_data[0],
+    ...     x_data[1],
+    ...     titles=['array 0', 'array 1'],
+    ...     cmap='twilight'
+    ... )
+    >>> fig.show()  #doctest: +SKIP
+
+    .. image:: plot_microstructures.png
+       :width: 400
+
+
+    """
+
+    fig, axs = plt.subplots(
+        3,
+        3,
+        figsize=figsize,
+        constrained_layout=True,
+    )
+    if len(arrs) == 1:
+        axs = (axs,)
+    if isinstance(titles, str):
+        titles = (titles,)
+    if len(titles) < len(arrs):
+        titles = titles + ("",) * (len(arrs) - len(titles))
+
+    i = 0
+    plots = []
+
+    for ax_ in axs:
+        j = 0
+        for ax in ax_:
+            pl_ = _plot_ax(ax, arrs=arrs[i:i+3], titles=titles, cmap=cmap, showticks=showticks)
+            plots.append(pl_)
+            j += 1
+        i += 3
+    # plots = list(
+    #     fmap(_plot_ax(arrs=arrs, titles=titles, cmap=cmap, showticks=showticks), axs)
+    # )
+#    if colorbar:
+#        _colorbar(
+#            fig,
+#            fig.add_axes([1.0, 0.05, 0.05, 0.9]),
+#            plots[0],
+#        )
+    plt.close()
+    return fig
