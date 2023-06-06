@@ -2,7 +2,7 @@
   description = "python shell flake";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-22.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
     flake-utils.url = "github:numtide/flake-utils";
     mach-nix.url = "github:davhau/mach-nix";
     pymks.url = "github:wd15/pymks/flakes";
@@ -35,9 +35,9 @@
           python = pythonVersion;
           packagesExtra = [ pymks_ sfepy modal ];
 
+
           providers.jupyterlab = "nixpkgs";
           providers.snakemake = "nixpkgs";
-          # providers.ipywidgets = "nixpkgs";
 
           requirements = ''
             tqdm
@@ -45,6 +45,9 @@
             papermill
             hdfdict
             ipywidgets
+            dask-ml==1.6.0
+            scikit-learn==1.0.2
+            dask==2.22.0
           '';
 
         };
