@@ -37,7 +37,6 @@
 
 
           providers.jupyterlab = "nixpkgs";
-          providers.snakemake = "nixpkgs";
 
           requirements = ''
             tqdm

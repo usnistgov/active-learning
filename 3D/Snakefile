@@ -1,0 +1,52 @@
+from pathlib import Path
+
+configfile: "config.yaml"
+
+working_dir = config["working_dir"]
+n_sample = config["n_sample"]
+work_dir = lambda x: str( Path(f"{working_dir}") / x )
+
+rule all:
+    input:
+        work_dir("plot.png")
+
+rule ipynb:
+    input:
+        "{notebook}.md"
+    output:
+        "{notebook}.ipynb"
+    shell:
+        "jupytext {input} --to ipynb"
+
+rule pca:
+    input:
+        da="data_shuffled.npz",
+        nb="generate-pca-data.ipynb"
+    output:
+        da=work_dir("pca.npz"),
+        nb=work_dir("generate-pca-data.ipynb")
+    shell:
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da}"
+
+rule run_active:
+    input:
+        da=work_dir("pca.npz"),
+        nb="run-active.ipynb"
+    output:
+        da=work_dir("active_{sample}.h5"),
+        nb=work_dir("run-active-{sample}.ipynb")
+    shell:
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da}"
+
+
+
+rule plot:
+    input:
+        da=[work_dir(f"active_{i}.h5") for i in range(n_sample)],
+        nb="plot.ipynb"
+    output:
+        da=work_dir("plot.png"),
+        nb=work_dir("plot.ipynb")
+    shell:
+        "FILES=$(echo '{input.da}' | tr ' ' ,);"
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -y \"input_files: [ ${{FILES}} ]\";"

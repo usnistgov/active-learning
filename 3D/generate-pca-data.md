@@ -15,6 +15,14 @@ jupyter:
 
 # Generate PCA Data
 
+```python tags=["parameters"]
+cutoff = 20
+n_components = 15
+input_file = 'data_shuffled.npz'
+output_file = 'data_pca_test.npz'
+n_chunk = 100
+```
+
 ```python
 import numpy as np
 from pymks import plot_microstructures, GenericTransformer, PrimitiveTransformer, TwoPointCorrelation
@@ -30,17 +38,18 @@ def pca_steps():
             lambda x: x.reshape(x.shape[0], 51, 51,51)
         )),    
         ("discritize",PrimitiveTransformer(n_state=2, min_=0.0, max_=1.0)),
-        ("correlations",TwoPointCorrelation(periodic_boundary=True, cutoff=20, correlations=[(0, 0)])),
+        ("correlations",TwoPointCorrelation(periodic_boundary=True, cutoff=cutoff, correlations=[(0, 0)])),
         ('flatten', GenericTransformer(lambda x: x.reshape(x.shape[0], -1))),
-        ('pca', IncrementalPCA(n_components=15)),
+        ('pca', IncrementalPCA(n_components=n_components)),
     )
 
 def make_pca_model():
     return Pipeline(steps=pca_steps())
+
 ```
 
 ```python
-data = np.load('data_shuffled.npz')
+data = np.load(input_file)
 ```
 
 ```python
@@ -49,16 +58,11 @@ y_data = data['y_data'].reshape(-1)
 ```
 
 ```python
-print(x_data.shape)
-print(y_data.shape)
-```
-
-```python
 plot_microstructures(*x_data[:10].reshape(10, 51, 51, 51)[:, :, :, 0], cmap='gray', colorbar=False)
 ```
 
 ```python
-x_data_da = da.from_array(x_data, chunks=(100, -1))
+x_data_da = da.from_array(x_data, chunks=(n_chunk, -1))
 ```
 
 ```python
@@ -70,5 +74,9 @@ x_data_pca = model.fit_transform(x_data_da).compute()
 ```
 
 ```python
-np.savez('data_pca_test.npz', x_data_pca=x_data_pca, y_data=y_data)
+np.savez(output_file, x_data_pca=x_data_pca, y_data=y_data)
+```
+
+```python
+
 ```
