@@ -9,6 +9,10 @@ from modAL.models import ActiveLearner, CommitteeRegressor, BayesianOptimizer
 from modAL.disagreement import max_std_sampling
 from modAL.models import BayesianOptimizer
 from modAL.acquisition import max_EI
+from sklearn.gaussian_process.kernels import Matern
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.metrics import mean_squared_error, make_scorer
+import types
 
 
 def split_on_ids(arr, ids):
@@ -210,3 +214,35 @@ def make_ensemble(x_train, y_train, model_func):
     ensemble_learner.score = types.MethodType(score, ensemble_learner)
 
     return ensemble_learner
+
+
+def train_test_split_(x_data, y_data, prop, random_state=None):
+    ids = np.random.choice(len(x_data), int(prop * len(x_data)), replace=False)
+    x_0, x_1 = split_on_ids(x_data, ids)
+    y_0, y_1 = split_on_ids(y_data, ids)
+    return x_0, x_1, y_0, y_1
+
+
+def split(x_data, y_data, train_sizes=(0.9, 0.09), random_state=None):
+    x_pool, x_, y_pool, y_ = train_test_split_(
+        x_data,
+        y_data,
+        train_sizes[0],
+        random_state=random_state
+    )
+    x_test, x_calibrate, y_test, y_calibrate = train_test_split_(
+        x_,
+        y_,
+        train_sizes[1] / (1 - train_sizes[0]),
+        random_state=random_state
+    )
+    return x_pool, x_test, x_calibrate, y_pool, y_test, y_calibrate
+
+
+def make_gp_model_matern(scoring):
+    kernel = Matern(length_scale=1.0)
+    regressor = GaussianProcessRegressor(kernel=kernel)
+    if scoring == 'mse':
+        mse_scorer = make_scorer(mean_squared_error)
+        regressor.score = types.MethodType(mse_scorer, regressor)
+    return regressor

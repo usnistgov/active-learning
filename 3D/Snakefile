@@ -2,13 +2,18 @@ from pathlib import Path
 
 configfile: "config.yaml"
 
-working_dir = config["working_dir"]
+prefix = config["prefix"]
 n_sample = config["n_sample"]
-work_dir = lambda x: str( Path(f"{working_dir}") / x )
+scoring = config["scoring"]
+iterations = config["iterations"]
+
+work_dir = lambda x: str( Path(f"{prefix}-{n_sample}-{scoring}-{iterations}") / x )
+
+
 
 rule all:
     input:
-        work_dir("plot.png")
+        work_dir(f"plot.png")
 
 rule ipynb:
     input:
@@ -35,18 +40,36 @@ rule run_active:
     output:
         da=work_dir("active_{sample}.h5"),
         nb=work_dir("run-active-{sample}.ipynb")
+    params:
+        iterations=iterations,
+        scoring=scoring
     shell:
-        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da}"
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p use_mse {params.scoring} -p iterations {params.iterations}"
 
+rule overall:
+    input:
+        da=work_dir("pca.npz"),
+        nb="overall-accuracy.ipynb"
+    output:
+        da=work_dir("overall.npz"),
+        nb=work_dir("overall.ipynb")
+    params:
+        n_sample=n_sample,
+        scoring=scoring
+    shell:
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p scoring {params.scoring} -p iterations {params.n_sample}"
 
 
 rule plot:
     input:
         da=[work_dir(f"active_{i}.h5") for i in range(n_sample)],
-        nb="plot.ipynb"
+        nb="plot.ipynb",
+        ov=work_dir(f"overall.npz")
     output:
-        da=work_dir("plot.png"),
+        da=work_dir(f"plot.png"),
         nb=work_dir("plot.ipynb")
+    params:
+        scoring=scoring
     shell:
         "FILES=$(echo '{input.da}' | tr ' ' ,);"
-        "papermill {input.nb} {output.nb} -p output_file {output.da} -y \"input_files: [ ${{FILES}} ]\";"
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p scoring {params.scoring} -p overall_input_file {input.ov} -y \"input_files: [ ${{FILES}} ]\";"

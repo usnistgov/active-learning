@@ -14,59 +14,26 @@ jupyter:
 ---
 
 ```python tags=["parameters"]
-iterations = 400
+iterations = 40
 input_file = 'data_pca_test.npz'
 output_file = 'active_data.h5'
+scoring = 'mse'
 ```
 
 ```python
 from tqdm.notebook import trange, tqdm
 import numpy as np
-from active import split_on_ids, next_sample_gsx, next_sample_igs
-from sklearn.gaussian_process.kernels import Matern
-from sklearn.gaussian_process import GaussianProcessRegressor
+from active import make_gp_model_matern, split, split_on_ids, next_sample_gsx, next_sample_igs
 import h5py
 import hdfdict
 ```
 
 ```python
-def train_test_split_(x_data, y_data, prop, random_state=None):
-    ids = np.random.choice(len(x_data), int(prop * len(x_data)), replace=False)
-    x_0, x_1 = split_on_ids(x_data, ids)
-    y_0, y_1 = split_on_ids(y_data, ids)
-    return x_0, x_1, y_0, y_1
-```
-
-```python
-def split(x_data, y_data, train_sizes=(0.9, 0.09), random_state=None):
-    x_pool, x_, y_pool, y_ = train_test_split_(
-        x_data,
-        y_data,
-        train_sizes[0],
-        random_state=random_state
-    )
-    x_test, x_calibrate, y_test, y_calibrate = train_test_split_(
-        x_,
-        y_,
-        train_sizes[1] / (1 - train_sizes[0]),
-        random_state=random_state
-    ) 
-    return x_pool, x_test, x_calibrate, y_pool, y_test, y_calibrate
-```
-
-```python
-def make_gp_model_matern():
-    kernel = Matern(length_scale=1.0)
-    regressor = GaussianProcessRegressor(kernel=kernel)
-    return regressor
-```
-
-```python
-def run_all(x_data_pca, y_data, train_sizes, learners, n_query):
+def run_all(x_data_pca, y_data, train_sizes, learners, n_query, scoring):
     data = split(x_data_pca, y_data, train_sizes)
     test_scores = dict()
     for k in tqdm(learners, position=1, desc="learner loop"):
-        test_scores[k] = run(data, learners[k][0], learners[k][1], n_query)[1]
+        test_scores[k] = run(data, learners[k][0], learners[k][1], n_query, scoring)[1]
     return test_scores
 ```
 
@@ -124,10 +91,10 @@ def query_random(model, x_pool, y_pool):
     return rework_pool(x_pool, y_pool, ids)
 
 
-def run(data, query_func, model_func, n_iter, train_sizes=(0.87, 0.004)):
+def run(data, query_func, model_func, n_iter, scoring, train_sizes=(0.87, 0.004)):
     x_pool, x_test, x_train, y_pool, y_test, y_train = data
     
-    model = model_func()
+    model = model_func(scoring)
     train_scores = []
     test_scores = []
     
@@ -175,12 +142,11 @@ y_data = data['y_data']
 ```
 
 ```python
-data = run_all(x_data_pca, y_data, (0.795, 0.2), learners_gp, iterations)
+data = run_all(x_data_pca, y_data, (0.795, 0.2), learners_gp, iterations, scoring)
 ```
 
 ```python
 # from https://github.com/SiggiGue/hdfdict/issues/6
-
 f = h5py.File(output_file, 'w')
 hdfdict.dump(data, output_file)
 f.close()

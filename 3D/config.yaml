@@ -1,2 +1,5 @@
-working_dir: data
-n_sample: 5
+prefix: 'data'
+n_sample: 20
+# 'mse' or 'r2'
+scoring: 'mse'
+iterations: 400
