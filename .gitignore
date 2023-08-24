@@ -9,3 +9,6 @@ dask-worker-space
 hao.ipynb
 *.npz
 shuffled/
+3D/*.ipynb
+.snakemake
+data*/
