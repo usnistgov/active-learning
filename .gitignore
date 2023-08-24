@@ -10,5 +10,6 @@ hao.ipynb
 *.npz
 shuffled/
 3D/*.ipynb
+2D/*.ipynb
 .snakemake
 data*/
