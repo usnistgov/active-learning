@@ -15,6 +15,13 @@ jupyter:
 
 # Active learning
 
+```python tags=["parameters"]
+input_file = 'data/data_pca-500-51-51.npz'
+n_query = 100
+n_iterations = 5
+output_file = 'data/output_500-51-51.h5'
+```
+
 ```python
 import numpy as np
 
@@ -31,9 +38,10 @@ import matplotlib
 from dask_ml.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
+from toolz.curried import map as fmap
 
 import hdfdict
-
+import h5py
 ```
 
 ```python
@@ -41,13 +49,6 @@ def make_gp_model_matern():
     kernel = Matern(length_scale=1.0, nu=0.5)
     regressor = GaussianProcessRegressor(kernel=kernel)
     return regressor
-
-def make_linear_model():
-    return Pipeline(steps=(
-        ('poly', PolynomialFeatures(degree=3)),
-        ('regressor', LinearRegression()),
-    ))
-
 ```
 
 ```python
@@ -73,13 +74,6 @@ def split(x_data, y_data, train_sizes=(0.9, 0.09), random_state=None):
         random_state=random_state
     ) 
     return x_pool, x_test, x_calibrate, y_pool, y_test, y_calibrate
-```
-
-```python
-@curry 
-def oracle_func(x_data, y_data, query_instance):
-    idx, query_value = query_instance
-    return query_value.reshape(1, -1), np.array([y_data[idx]]).reshape(1)
 ```
 
 ```python
@@ -149,8 +143,6 @@ def igs_query(model, x_pool, y_pool, batch_size):
 ```
 
 ```python
-from toolz.curried import map as fmap
-
 def merge_func(x):
     return dict(
         mean=np.mean(x, axis=0),
@@ -211,53 +203,10 @@ def rework_pool(x_pool, y_pool, ids):
     return x_, x_pool, y_, y_pool
 ```
 
-```python
-def plot_scores(scores, opt=None, opt_error=None, error_freq=20, y_min=0.0):
-
-    plt.style.use('ggplot')
-    plt.rcParams['axes.facecolor']='w'
-    plt.figure(figsize=(10, 8))
-    plt.rc('xtick', labelsize=14)    # fontsize of the tick labels
-    plt.rc('ytick', labelsize=14) 
-    ax = plt.gca()
-    matplotlib.rc('font', **dict(size=16))
-    names = dict(
-        uncertainty=('Uncertainty', 'solid'),
-        random=("Random", 'dotted'),
-        gsx=("GSX", 'dashed'),
-        gsy=("GSY", 'dashdot'),
-        igs=("IGS", (5, (10, 3)))
-    )
-
-    offset = 10
-    for k, v in scores.items():
-        y = v['mean']
-        x = np.arange(len(y))
-        p = ax.plot(x, y, label=names[k][0], lw=3, linestyle=names[k][1])
-        e = v['std']
-        xe, ye, ee = x[offset::error_freq], y[offset::error_freq], e[offset::error_freq]
-        ax.errorbar(xe, ye, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
-        offset += 5
-        
-    if opt is not None:
-        xx = [0, 50, 100]
-        yy = [opt] * len(xx)
-        ee = [opt_error] * len(xx)
-        p = ax.plot(xx, yy, 'k--', label='Optimal')
-        ax.errorbar(xx, yy, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
-
-    plt.legend(fontsize=16)
-    plt.xlabel('N (queries)', fontsize=16)
-    plt.ylabel(r'$R^2$', fontsize=16);
-    plt.ylim(y_min, 1)
-    
-    return plt, ax
-```
-
 # Load data and run the active learning
 
 ```python
-data = np.load('data_pca-500-51-51.npz')
+data = np.load(input_file)
 ```
 
 ```python
@@ -266,13 +215,6 @@ y_data = data['y_data']
 ```
 
 ```python
-learners_linear = dict(
-    random=(query_random, make_linear_model),
-    gsx=(gsx_query, make_linear_model),
-    gsy=(gsy_query, make_linear_model),
-    igs=(igs_query, make_linear_model)
-)
-
 learners_gp = dict(
     uncertainty=(query_uncertainty, make_gp_model_matern),
     random=(query_random, make_gp_model_matern),
@@ -281,55 +223,12 @@ learners_gp = dict(
     igs=(igs_query, make_gp_model_matern)
 )
 
-output = run_multiple(x_data_pca, y_data, (0.79, 0.2), learners_gp, 100, 40, 1)
+output = run_multiple(x_data_pca, y_data, (0.79, 0.2), learners_gp, n_query, n_iterations, 1)
 ```
 
 ```python
-hdfdict.dump(output, 'output_500-51-51.h5')
-```
-
-```python
-output_500_51_51 = hdfdict.load('output_500-51-51.h5')
-```
-
-```python
-plt_, ax = plot_scores(output_500_51_51, error_freq=20, opt=0.8939050708891709, opt_error=0.03058, y_min=0.3)
-plt_.title('Active Learning Curves for 2D Composite')
-plt_.savefig('plot.png', dpi=200)
-```
-
-```python
-plt_, ax = plot_scores(output_, error_freq=20, opt=0.8660962830838835, opt_error=0.05870589607966928, y_min=0.3)
-plt_.title('Active Learning Curves for 2D Composite')
-plt_.savefig('plot.png', dpi=200)
-```
-
-```python
-plot_scores(output, error_freq=20, opt=None, opt_error=0.0059322)
-```
-
-```python
-?hdfdict.dump
-```
-
-```python
-!rm output.h5
-```
-
-```python
-hdfdict.dump(output, 'output.h5')
-```
-
-```python
-output_ = hdfdict.load('output.h5')
-```
-
-```python
-plt, ax = plot_scores(output_, error_freq=20, opt=0.993, opt_error=0.0014)
-plt.title('Active Learning Curves for the 2D Material')
-plt.savefig('plot2d.png')
-```
-
-```python
-
+# from https://github.com/SiggiGue/hdfdict/issues/6
+f = h5py.File(output_file, 'w')
+hdfdict.dump(output, output_file)
+f.close()
 ```

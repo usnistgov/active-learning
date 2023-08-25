@@ -16,8 +16,8 @@ jupyter:
 # 2D PCA Analysis
 
 ```python tags=["parameters"]
-input_file = 'data/data-500-51-51.npz'
-output_file = 'data/data_pca-500-51-51.npz'
+input_file = 'data-gen/data-500.npz'
+output_file = 'data-pca.npz'
 ```
 
 ```python

@@ -2,19 +2,20 @@
 
 from pathlib import Path
 
-n_micro_samples = 500
-n_random_samples = 5
-scoring = "mse"
-iterations = 50
+n_samples = 500
+n_iterations = 40
+scoring = "r2"
+n_query = 100
 gen_dir = "data-gen"
 
-work_dir = lambda x: str( Path(f"data-{n_random_samples}-{scoring}-{iterations}-{n_micro_samples}") / x )
+work_dir = lambda x: str( Path(f"data-{n_iterations}-{scoring}-{n_query}-{n_samples}") / x )
 work_dir_gen = lambda x: str( Path(f"{gen_dir}") / x )
 
 
 rule all:
     input:
-        work_dir(f"data-pca.npz")
+#        work_dir(f"plot.png"),
+        work_dir_gen(f"data-{n_samples}.npz")
 
 rule ipynb:
     input:
@@ -29,21 +30,63 @@ rule data_gen:
         nb="generate-data.ipynb"
     output:
         nb=work_dir_gen("generate-data.ipynb"),
-        da=work_dir_gen(f"data-{n_micro_samples}.npz")
+        da=work_dir_gen(f"data-{n_samples}.npz")
     params:
-        n_samples=n_micro_samples,
+        n_samples=n_samples,
         dir_=gen_dir
     shell:
         "papermill {input.nb} {output.nb} -p output_file {output.da} -p n_samples {params.n_samples}"
 
-
 rule pca:
     input:
-        da="data/data-500-51-51.npz",
-#        da=work_dir_gen(f"data-{n_micro_samples}.npz"),
+#        da="data/data-500-51-51.npz",
+        da=work_dir_gen(f"data-{n_samples}.npz"),
         nb="pca-analysis.ipynb"
     output:
         nb=work_dir("pca-analysis.ipynb"),
         da=work_dir("data-pca.npz")
     shell:
         "papermill {input.nb} {output.nb} -p input_file {input.da} -p output_file {output.da}"
+
+
+rule run_active:
+    input:
+        da=work_dir("data-pca.npz"),
+        nb="run-active.ipynb"
+    output:
+        da=work_dir("active_{sample}.h5"),
+        nb=work_dir("run-active-{sample}.ipynb")
+    params:
+        n_query=n_query,
+        scoring=scoring
+    shell:
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p use_mse {params.scoring} -p n_query {params.n_query}"
+
+
+rule overall:
+    input:
+        da=work_dir("data-pca.npz"),
+        nb="overall-accuracy.ipynb"
+    output:
+        da=work_dir("overall.npz"),
+        nb=work_dir("overall.ipynb")
+    params:
+        n_iterations=n_iterations,
+        scoring=scoring
+    shell:
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p scoring {params.scoring} -p n_iterations {params.n_iterations}"
+
+
+rule plot:
+    input:
+        da=[work_dir(f"active_{i}.h5") for i in range(n_iterations)],
+        nb="plot.ipynb",
+        ov=work_dir(f"overall.npz")
+    output:
+        da=work_dir(f"plot.png"),
+        nb=work_dir("plot.ipynb")
+    params:
+        scoring=scoring
+    shell:
+        "FILES=$(echo '{input.da}' | tr ' ' ,);"
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p scoring {params.scoring} -p overall_input_file {input.ov} -y \"input_files: [ ${{FILES}} ]\";"

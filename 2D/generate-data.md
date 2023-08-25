@@ -32,7 +32,7 @@ from pymks import (
     solve_fe
 )
 
-from active import plot_microstructures
+#from active import plot_microstructures
 ```
 
 ## Generate Data Functions
