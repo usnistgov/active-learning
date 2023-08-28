@@ -34,6 +34,7 @@ let
     hdfdict
     pkgs.snakemake
     papermill
+    pkgs.git
   ];
 
 in

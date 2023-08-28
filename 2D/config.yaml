@@ -1,4 +1,5 @@
-n_iterations: 40
-scoring: "mse"
-n_query: 100
-job_id: "00000003"
+n_iterations: 80
+scoring: "r2"
+n_query: 200
+job_id: "00000008"
+reason: "Run with more queries and nu=0.5"

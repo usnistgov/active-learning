@@ -240,7 +240,7 @@ def split(x_data, y_data, train_sizes=(0.9, 0.09), random_state=None):
 
 
 def make_gp_model_matern(scoring):
-    kernel = Matern(length_scale=1.0)
+    kernel = Matern(length_scale=1.0, nu=0.5)
     regressor = GaussianProcessRegressor(kernel=kernel)
     if scoring == 'mse':
         mse_scorer = make_scorer(mean_squared_error)

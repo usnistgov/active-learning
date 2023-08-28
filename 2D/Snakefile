@@ -39,7 +39,9 @@ rule copy:
        stress=work_dir("stress-data.npz")
     shell:
        "cp {input.stress} {output.stress};"
-       "cp {input.config} {output.config}"
+       "cp {input.config} {output.config};"
+       "echo \"commit_hash: $(git log -1 --pretty=format:\\\"%h\\\")\" >> {output.config};"
+       "echo \"date: \\\"$(date)\\\"\" >> {output.config}"
 
 # rule data_gen:
 #     input:
