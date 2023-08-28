@@ -6,7 +6,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.14.5
+      jupytext_version: 1.15.0
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -39,7 +39,7 @@ print(x_data_pca.shape)
 from sklearn.gaussian_process.kernels import Matern
 from sklearn.gaussian_process import GaussianProcessRegressor
 def make_gp_model_matern():
-    kernel = Matern(length_scale=1.0, nu=0.5)
+    kernel = Matern(length_scale=1.0)
     #kernel = 0.5 * RBF(length_scale=1) + WhiteKernel(noise_level=1)
     regressor = GaussianProcessRegressor(kernel=kernel)
     return regressor

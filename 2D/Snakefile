@@ -1,21 +1,26 @@
 # run with `snakemake --cores 1`
 
 from pathlib import Path
+from datetime import datetime
+import uuid
 
-n_samples = 500
-n_iterations = 40
-scoring = "r2"
-n_query = 100
-gen_dir = "data-gen"
+configfile: "config.yaml"
 
-work_dir = lambda x: str( Path(f"data-{n_iterations}-{scoring}-{n_query}-{n_samples}") / x )
-work_dir_gen = lambda x: str( Path(f"{gen_dir}") / x )
+n_iterations = config['n_iterations']
+scoring = config['scoring']
+n_query = config['n_query']
+job_id = config['job_id']
 
+# now = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+# unique_id = str(uuid.uuid4())[:8]
+
+# work_dir = lambda x: str( Path(f"run_{now}_{unique_id}") / x )
+work_dir = lambda x: str( Path(f"run_{job_id}") / x)
 
 rule all:
     input:
-#        work_dir(f"plot.png"),
-        work_dir_gen(f"data-{n_samples}.npz")
+        work_dir("plot.png"),
+        work_dir("config.yaml")
 
 rule ipynb:
     input:
@@ -25,22 +30,32 @@ rule ipynb:
     shell:
         "jupytext {input} --to ipynb"
 
-rule data_gen:
+rule copy:
     input:
-        nb="generate-data.ipynb"
+       stress="data-gen/data-500.npz",
+       config="config.yaml"
     output:
-        nb=work_dir_gen("generate-data.ipynb"),
-        da=work_dir_gen(f"data-{n_samples}.npz")
-    params:
-        n_samples=n_samples,
-        dir_=gen_dir
+       config=work_dir("config.yaml"),
+       stress=work_dir("stress-data.npz")
     shell:
-        "papermill {input.nb} {output.nb} -p output_file {output.da} -p n_samples {params.n_samples}"
+       "cp {input.stress} {output.stress};"
+       "cp {input.config} {output.config}"
+
+# rule data_gen:
+#     input:
+#         nb="generate-data.ipynb"
+#     output:
+#         nb=work_dir("generate-data.ipynb"),
+#         da=work_dir("stress-data.npz")
+#     params:
+#         n_samples=n_samples,
+#         dir_=gen_dir
+#     shell:
+#         "papermill {input.nb} {output.nb} -p output_file {output.da} -p n_samples {params.n_samples}"
 
 rule pca:
     input:
-#        da="data/data-500-51-51.npz",
-        da=work_dir_gen(f"data-{n_samples}.npz"),
+        da=work_dir("stress-data.npz"),
         nb="pca-analysis.ipynb"
     output:
         nb=work_dir("pca-analysis.ipynb"),
@@ -54,13 +69,13 @@ rule run_active:
         da=work_dir("data-pca.npz"),
         nb="run-active.ipynb"
     output:
-        da=work_dir("active_{sample}.h5"),
-        nb=work_dir("run-active-{sample}.ipynb")
+        da=work_dir("active_{iteration}.h5"),
+        nb=work_dir("run-active-{iteration}.ipynb")
     params:
         n_query=n_query,
         scoring=scoring
     shell:
-        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p use_mse {params.scoring} -p n_query {params.n_query}"
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p scoring {params.scoring} -p n_query {params.n_query}"
 
 
 rule overall:
@@ -81,9 +96,9 @@ rule plot:
     input:
         da=[work_dir(f"active_{i}.h5") for i in range(n_iterations)],
         nb="plot.ipynb",
-        ov=work_dir(f"overall.npz")
+        ov=work_dir("overall.npz")
     output:
-        da=work_dir(f"plot.png"),
+        da=work_dir("plot.png"),
         nb=work_dir("plot.ipynb")
     params:
         scoring=scoring

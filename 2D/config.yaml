@@ -1,0 +1,4 @@
+n_iterations: 40
+scoring: "mse"
+n_query: 100
+job_id: "00000003"
