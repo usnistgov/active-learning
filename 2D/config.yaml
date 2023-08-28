@@ -1,5 +1,5 @@
 n_iterations: 80
 scoring: "r2"
 n_query: 200
-job_id: "00000008"
-reason: "Run with more queries and nu=0.5"
+job_id: "00000009"
+reason: "Ensure optimal line is across entire graph"

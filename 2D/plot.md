@@ -84,7 +84,7 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse'):
         offset += 5
         
     if opt is not None:
-        xx = [0, 50, 100]
+        xx = [0, 50, 100, 150, 200]
         yy = [opt] * len(xx)
         ee = [opt_error] * len(xx)
         if scoring == 'r2':
