@@ -72,7 +72,12 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse'):
     for k, v in scores.items():
         y = v['mean']
         x = np.arange(len(y))
-        p = ax.plot(x, y, label=names[k][0], lw=3, linestyle=names[k][1])
+        if scoring == 'r2':
+            p = ax.plot(x, y, label=names[k][0], lw=3, linestyle=names[k][1])
+        elif scoring == 'mse':
+            p = ax.semilogy(x, y, label=names[k][0], lw=3, linestyle=names[k][1])
+        else:
+            raise RuntimeError(f'{scoring} scoring method not found')
         e = v['std']
         xe, ye, ee = x[offset::error_freq], y[offset::error_freq], e[offset::error_freq]
         ax.errorbar(xe, ye, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
@@ -82,7 +87,12 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse'):
         xx = [0, 50, 100]
         yy = [opt] * len(xx)
         ee = [opt_error] * len(xx)
-        p = ax.plot(xx, yy, 'k--', label='Optimal')
+        if scoring == 'r2':
+            p = ax.plot(xx, yy, 'k--', label='Optimal')
+        elif scoring == 'mse':
+            p = ax.semilogy(xx, yy, 'k--', label='Optimal')
+        else:
+            raise RuntimeError(f'{scoring} scoring method not found')
         ax.errorbar(xx, yy, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
 
     plt.legend(fontsize=16)
@@ -91,6 +101,11 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse'):
     plt.ylabel(ylabel, fontsize=16)
     if scoring == 'r2':
         plt.ylim(0.4, 1)
+    elif scoring == 'mse':
+        plt.ylim(1e-5, 1e-3)
+    else:
+        raise RuntimeError(f'{scoring} scoring method not found')
+        
     
     return plt, ax
 ```

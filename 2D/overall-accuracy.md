@@ -36,13 +36,13 @@ print(x_data_pca.shape)
 ```
 
 ```python
-from sklearn.gaussian_process.kernels import Matern
-from sklearn.gaussian_process import GaussianProcessRegressor
-def make_gp_model_matern():
-    kernel = Matern(length_scale=1.0)
-    #kernel = 0.5 * RBF(length_scale=1) + WhiteKernel(noise_level=1)
-    regressor = GaussianProcessRegressor(kernel=kernel)
-    return regressor
+#from sklearn.gaussian_process.kernels import Matern
+#from sklearn.gaussian_process import GaussianProcessRegressor
+#def make_gp_model_matern():
+#    kernel = Matern(length_scale=1.0)
+#    #kernel = 0.5 * RBF(length_scale=1) + WhiteKernel(noise_level=1)
+##    regressor = GaussianProcessRegressor(kernel=kernel)
+#    return regressor
 ```
 
 ```python
@@ -52,7 +52,7 @@ train_scores = []
 for i in range(n_iterations):
     print(i)
     x_pool, x_test, x_train, y_pool, y_test, y_train = split(x_data_pca, y_data, (0.8, 0.2))
-    model = make_gp_model_matern()
+    model = make_gp_model_matern(scoring)
     model.fit(x_pool, y_pool)
     train_score = model.score(x_pool, y_pool)
     test_score = model.score(x_test, y_test)
