@@ -5,12 +5,14 @@ from toolz.curried import curry, pipe, valmap, itemmap, iterate, do, merge_with
 from toolz.curried import map as map_
 from dask_ml.model_selection import train_test_split
 import tqdm
-from modAL.models import ActiveLearner, CommitteeRegressor, BayesianOptimizer
-from modAL.disagreement import max_std_sampling
-from modAL.models import BayesianOptimizer
-from modAL.acquisition import max_EI
-import matplotlib.pyplot as plt
-from pymks.fmks.plot import fmap, _plot_ax
+# from modAL.models import ActiveLearner, CommitteeRegressor, BayesianOptimizer
+# from modAL.disagreement import max_std_sampling
+# from modAL.models import BayesianOptimizer
+# from modAL.acquisition import max_EI
+from sklearn.gaussian_process.kernels import Matern
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.metrics import mean_squared_error, make_scorer
+import types
 
 
 def split_on_ids(arr, ids):
@@ -174,17 +176,17 @@ query_random = lambda model, x_: pipe(
 )
 
 
-make_active = make_learner(ActiveLearner)
+# make_active = make_learner(ActiveLearner)
 
 
-make_bayes = make_learner(BayesianOptimizer, max_EI)
-make_uncertainty = make_active(query_uncertainty)
-make_random = make_active(query_random)
+# make_bayes = make_learner(BayesianOptimizer, max_EI)
+# make_uncertainty = make_active(query_uncertainty)
+# make_random = make_active(query_random)
 
 def make_gsx(distance_transformer):
     return make_active(gsx_query(distance_transformer))
 
-make_gsy = make_active(gsy_query)
+# make_gsy = make_active(gsy_query)
 
 def make_igs(distance_transformer):
     return make_active(igs_query(distance_transformer))
@@ -214,65 +216,33 @@ def make_ensemble(x_train, y_train, model_func):
     return ensemble_learner
 
 
-
-def plot_microstructures(
-    *arrs, titles=(), cmap=None, colorbar=True, showticks=False, figsize=(5, 5)
-):
-    """Plot a set of microstructures side-by-side
-
-    Args:
-      arrs: any number of 2D arrays to plot
-      titles: a sequence of titles with len(*arrs)
-      cmap: any matplotlib colormap
-
-    >>> import numpy as np
-    >>> np.random.seed(1)
-    >>> x_data = np.random.random((2, 10, 10))
-    >>> fig = plot_microstructures(
-    ...     x_data[0],
-    ...     x_data[1],
-    ...     titles=['array 0', 'array 1'],
-    ...     cmap='twilight'
-    ... )
-    >>> fig.show()  #doctest: +SKIP
-
-    .. image:: plot_microstructures.png
-       :width: 400
+def train_test_split_(x_data, y_data, prop, random_state=None):
+    ids = np.random.choice(len(x_data), int(prop * len(x_data)), replace=False)
+    x_0, x_1 = split_on_ids(x_data, ids)
+    y_0, y_1 = split_on_ids(y_data, ids)
+    return x_0, x_1, y_0, y_1
 
 
-    """
-
-    fig, axs = plt.subplots(
-        3,
-        3,
-        figsize=figsize,
-        constrained_layout=True,
+def split(x_data, y_data, train_sizes=(0.9, 0.09), random_state=None):
+    x_pool, x_, y_pool, y_ = train_test_split_(
+        x_data,
+        y_data,
+        train_sizes[0],
+        random_state=random_state
     )
-    if len(arrs) == 1:
-        axs = (axs,)
-    if isinstance(titles, str):
-        titles = (titles,)
-    if len(titles) < len(arrs):
-        titles = titles + ("",) * (len(arrs) - len(titles))
+    x_test, x_calibrate, y_test, y_calibrate = train_test_split_(
+        x_,
+        y_,
+        train_sizes[1] / (1 - train_sizes[0]),
+        random_state=random_state
+    )
+    return x_pool, x_test, x_calibrate, y_pool, y_test, y_calibrate
 
-    i = 0
-    plots = []
 
-    for ax_ in axs:
-        j = 0
-        for ax in ax_:
-            pl_ = _plot_ax(ax, arrs=arrs[i:i+3], titles=titles, cmap=cmap, showticks=showticks)
-            plots.append(pl_)
-            j += 1
-        i += 3
-    # plots = list(
-    #     fmap(_plot_ax(arrs=arrs, titles=titles, cmap=cmap, showticks=showticks), axs)
-    # )
-#    if colorbar:
-#        _colorbar(
-#            fig,
-#            fig.add_axes([1.0, 0.05, 0.05, 0.9]),
-#            plots[0],
-#        )
-    plt.close()
-    return fig
+def make_gp_model_matern(scoring):
+    kernel = Matern(length_scale=1.0, nu=0.5)
+    regressor = GaussianProcessRegressor(kernel=kernel)
+    if scoring == 'mse':
+        mse_scorer = make_scorer(mean_squared_error)
+        regressor.score = types.MethodType(mse_scorer, regressor)
+    return regressor
