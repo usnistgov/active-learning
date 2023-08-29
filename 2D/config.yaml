@@ -1,5 +1,5 @@
 n_iterations: 80
-scoring: "r2"
+scoring: "mse"
 n_query: 200
-job_id: "00000009"
+job_id: "00000010"
 reason: "Ensure optimal line is across entire graph"
