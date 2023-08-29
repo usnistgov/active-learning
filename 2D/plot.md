@@ -118,7 +118,7 @@ err = np.std(overall_scores)
 
 ```python
 plt, ax = plot_scores(output, error_freq=40, opt=opt, opt_error=err, scoring=scoring)
-plt.title('Active Learning Curves for 3D Composite')
+plt.title('Active Learning Curves for 2D Composite')
 plt.savefig(output_file, dpi=200)
 ```
 
