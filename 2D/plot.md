@@ -102,7 +102,7 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse'):
     if scoring == 'r2':
         plt.ylim(0.4, 1)
     elif scoring == 'mse':
-        plt.ylim(1e-5, 1e-3)
+        plt.ylim(1e-5, 3e-4)
     else:
         raise RuntimeError(f'{scoring} scoring method not found')
         
