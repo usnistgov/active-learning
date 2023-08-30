@@ -1,19 +1,21 @@
+# run with `snakemake --cores 1`
+
 from pathlib import Path
 
 configfile: "config.yaml"
 
-prefix = config["prefix"]
-n_sample = config["n_sample"]
-scoring = config["scoring"]
-iterations = config["iterations"]
+n_iterations = config['n_iterations']
+scoring = config['scoring']
+n_query = config['n_query']
+job_id = config['job_id']
 
-work_dir = lambda x: str( Path(f"{prefix}-{n_sample}-{scoring}-{iterations}") / x )
-
+work_dir = lambda x: str( Path(f"run_{job_id}") / x)
 
 
 rule all:
     input:
-        work_dir(f"plot.png")
+        work_dir(f"plot.png"),
+        work_dir("config.yaml")
 
 rule ipynb:
     input:
@@ -22,6 +24,16 @@ rule ipynb:
         "{notebook}.ipynb"
     shell:
         "jupytext {input} --to ipynb"
+
+rule copy:
+    input:
+       config="config.yaml"
+    output:
+       config=work_dir("config.yaml"),
+    shell:
+       "cp {input.config} {output.config};"
+       "echo \"commit_hash: $(git log -1 --pretty=format:\\\"%h\\\")\" >> {output.config};"
+       "echo \"date: \\\"$(date)\\\"\" >> {output.config}"
 
 rule pca:
     input:
@@ -38,10 +50,10 @@ rule run_active:
         da=work_dir("pca.npz"),
         nb="run-active.ipynb"
     output:
-        da=work_dir("active_{sample}.h5"),
-        nb=work_dir("run-active-{sample}.ipynb")
+        da=work_dir("active_{iteration}.h5"),
+        nb=work_dir("run-active-{iteration}.ipynb")
     params:
-        iterations=iterations,
+        iterations=n_query,
         scoring=scoring
     shell:
         "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p use_mse {params.scoring} -p iterations {params.iterations}"
@@ -54,7 +66,7 @@ rule overall:
         da=work_dir("overall.npz"),
         nb=work_dir("overall.ipynb")
     params:
-        n_sample=n_sample,
+        n_sample=n_iterations,
         scoring=scoring
     shell:
         "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p scoring {params.scoring} -p iterations {params.n_sample}"
@@ -62,7 +74,7 @@ rule overall:
 
 rule plot:
     input:
-        da=[work_dir(f"active_{i}.h5") for i in range(n_sample)],
+        da=[work_dir(f"active_{i}.h5") for i in range(n_iterations)],
         nb="plot.ipynb",
         ov=work_dir(f"overall.npz")
     output:

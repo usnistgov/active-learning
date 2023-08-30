@@ -1,5 +1,6 @@
-prefix: 'data'
-n_sample: 20
+n_iterations: 20
 # 'mse' or 'r2'
 scoring: 'mse'
-iterations: 400
+n_query: 400
+job_id: "00000001"
+reason: "Intial test of new workflow"
