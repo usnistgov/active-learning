@@ -11,7 +11,7 @@ import tqdm
 # from modAL.acquisition import max_EI
 from sklearn.gaussian_process.kernels import Matern
 from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.metrics import mean_squared_error, make_scorer
+from sklearn.metrics import mean_squared_error, make_scorer, mean_absolute_error
 import types
 
 
@@ -242,7 +242,8 @@ def split(x_data, y_data, train_sizes=(0.9, 0.09), random_state=None):
 def make_gp_model_matern(scoring, nu=0.5):
     kernel = Matern(length_scale=1.0, nu=nu)
     regressor = GaussianProcessRegressor(kernel=kernel)
-    if scoring == 'mse':
-        mse_scorer = make_scorer(mean_squared_error)
-        regressor.score = types.MethodType(mse_scorer, regressor)
+    score_func = dict(mse=mean_squared_error, mae=mean_absolute_error, r2=None)[scoring]
+    if score_func is not None:
+        scorer = make_scorer(score_func)
+        regressor.score = types.MethodType(scorer, regressor)
     return regressor
