@@ -239,8 +239,8 @@ def split(x_data, y_data, train_sizes=(0.9, 0.09), random_state=None):
     return x_pool, x_test, x_calibrate, y_pool, y_test, y_calibrate
 
 
-def make_gp_model_matern(scoring):
-    kernel = Matern(length_scale=1.0, nu=0.5)
+def make_gp_model_matern(scoring, nu=0.5):
+    kernel = Matern(length_scale=1.0, nu=nu)
     regressor = GaussianProcessRegressor(kernel=kernel)
     if scoring == 'mse':
         mse_scorer = make_scorer(mean_squared_error)

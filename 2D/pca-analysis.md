@@ -6,7 +6,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.15.0
+      jupytext_version: 1.14.5
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -31,16 +31,18 @@ from pymks import (
     GenericTransformer,
 )
 
-from dask_ml.decomposition import IncrementalPCA
+#from dask_ml.decomposition import IncrementalPCA
+from sklearn.decomposition import IncrementalPCA
+from sklearn.decomposition import KernelPCA
 ```
 
 ```python
 def pca_steps():
     return (
         ("discritize",PrimitiveTransformer(n_state=2, min_=0.0, max_=1.0)),
-        ("correlations",TwoPointCorrelation(periodic_boundary=True, cutoff=30, correlations=[(0, 0)])),
+        ("correlations",TwoPointCorrelation(periodic_boundary=True, cutoff=25, correlations=[(0, 0)])),
         ('flatten', GenericTransformer(lambda x: x.reshape(x.shape[0], -1))),
-        ('pca', IncrementalPCA(n_components=15)),
+        ('pca', KernelPCA(n_components=15)),
     )
 
 def make_pca_model():
@@ -58,7 +60,7 @@ print(y_data.shape)
 ```python
 x_data_da = da.from_array(x_data, chunks=(50, 51, 51))
 model = make_pca_model()
-x_data_pca = model.fit_transform(x_data_da).compute()
+x_data_pca = model.fit_transform(x_data_da)
 ```
 
 ```python
