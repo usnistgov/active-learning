@@ -1,5 +1,6 @@
 n_iterations: 80
-scoring: "mse"
+scoring: "r2"
 n_query: 200
-job_id: "00000010"
-reason: "Ensure optimal line is across entire graph"
+job_id: "00000015"
+reason: "try with nu=1.5 for Matern"
+nu: 1.5

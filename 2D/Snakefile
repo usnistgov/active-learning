@@ -10,11 +10,8 @@ n_iterations = config['n_iterations']
 scoring = config['scoring']
 n_query = config['n_query']
 job_id = config['job_id']
+nu = config['nu']
 
-# now = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
-# unique_id = str(uuid.uuid4())[:8]
-
-# work_dir = lambda x: str( Path(f"run_{now}_{unique_id}") / x )
 work_dir = lambda x: str( Path(f"run_{job_id}") / x)
 
 rule all:
@@ -75,9 +72,10 @@ rule run_active:
         nb=work_dir("run-active-{iteration}.ipynb")
     params:
         n_query=n_query,
-        scoring=scoring
+        scoring=scoring,
+        nu=nu
     shell:
-        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p scoring {params.scoring} -p n_query {params.n_query}"
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p scoring {params.scoring} -p n_query {params.n_query} -p nu {params.nu}"
 
 
 rule overall:
@@ -89,9 +87,10 @@ rule overall:
         nb=work_dir("overall.ipynb")
     params:
         n_iterations=n_iterations,
-        scoring=scoring
+        scoring=scoring,
+        nu=nu
     shell:
-        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p scoring {params.scoring} -p n_iterations {params.n_iterations}"
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p scoring {params.scoring} -p n_iterations {params.n_iterations} -p nu {params.nu}"
 
 
 rule plot:
