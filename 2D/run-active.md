@@ -6,7 +6,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.15.0
+      jupytext_version: 1.14.5
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -18,6 +18,7 @@ n_query = 100
 input_file = 'data/data_pca-500-51-51.npz'
 output_file = 'data/active_data.h5'
 scoring = 'mse'
+nu = 0.5
 ```
 
 ```python
@@ -29,11 +30,11 @@ import hdfdict
 ```
 
 ```python
-def run_all(x_data_pca, y_data, train_sizes, learners, n_query, scoring):
+def run_all(x_data_pca, y_data, train_sizes, learners, n_query, scoring, nu=0.5):
     data = split(x_data_pca, y_data, train_sizes)
     test_scores = dict()
     for k in tqdm(learners, position=1, desc="learner loop"):
-        test_scores[k] = run(data, learners[k][0], learners[k][1], n_query, scoring)[1]
+        test_scores[k] = run(data, learners[k][0], learners[k][1], n_query, scoring, nu=nu)[1]
     return test_scores
 ```
 
@@ -91,10 +92,10 @@ def query_random(model, x_pool, y_pool):
     return rework_pool(x_pool, y_pool, ids)
 
 
-def run(data, query_func, model_func, n_iter, scoring, train_sizes=(0.87, 0.004)):
+def run(data, query_func, model_func, n_iter, scoring, train_sizes=(0.87, 0.004), nu=0.5):
     x_pool, x_test, x_train, y_pool, y_test, y_train = data
     
-    model = model_func(scoring)
+    model = model_func(scoring, nu=nu)
     train_scores = []
     test_scores = []
     
@@ -142,7 +143,7 @@ y_data = data['y_data']
 ```
 
 ```python
-data = run_all(x_data_pca, y_data, (0.795, 0.2), learners_gp, n_query, scoring)
+data = run_all(x_data_pca, y_data, (0.795, 0.2), learners_gp, n_query, scoring, nu=nu)
 ```
 
 ```python

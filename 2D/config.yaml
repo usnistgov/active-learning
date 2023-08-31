@@ -1,5 +1,7 @@
 n_iterations: 80
-scoring: "mse"
+scoring: "r2"
 n_query: 200
-job_id: "00000010"
-reason: "Ensure optimal line is across entire graph"
+job_name: "job_2023-08-31_r2_v000"
+reason: "run with r2 just to check the results"
+nu: 0.5
+ylog: false
