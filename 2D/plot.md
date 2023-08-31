@@ -6,7 +6,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.15.0
+      jupytext_version: 1.14.5
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -24,6 +24,7 @@ input_files = [
 output_file = 'plot.png'
 overall_input_file = "overall-accuracy.npz"
 scoring = 'mse'
+ylog = False
 ```
 
 ```python
@@ -51,7 +52,7 @@ output = merge_with(merge_func, *data_list)
 ```
 
 ```python
-def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse'):
+def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse', ylog=False):
 
     plt.style.use('ggplot')
     plt.rcParams['axes.facecolor']='w'
@@ -72,12 +73,12 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse'):
     for k, v in scores.items():
         y = v['mean']
         x = np.arange(len(y))
-        if scoring == 'r2':
-            p = ax.plot(x, y, label=names[k][0], lw=3, linestyle=names[k][1])
-        elif scoring == 'mse':
+        
+        if ylog:
             p = ax.semilogy(x, y, label=names[k][0], lw=3, linestyle=names[k][1])
         else:
-            raise RuntimeError(f'{scoring} scoring method not found')
+            p = ax.plot(x, y, label=names[k][0], lw=3, linestyle=names[k][1])
+        
         e = v['std']
         xe, ye, ee = x[offset::error_freq], y[offset::error_freq], e[offset::error_freq]
         ax.errorbar(xe, ye, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
@@ -87,25 +88,22 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse'):
         xx = [0, 50, 100, 150, 200]
         yy = [opt] * len(xx)
         ee = [opt_error] * len(xx)
-        if scoring == 'r2':
-            p = ax.plot(xx, yy, 'k--', label='Optimal')
-        elif scoring == 'mse':
+        
+        if ylog:
             p = ax.semilogy(xx, yy, 'k--', label='Optimal')
         else:
-            raise RuntimeError(f'{scoring} scoring method not found')
+            p = ax.plot(xx, yy, 'k--', label='Optimal')
+        
         ax.errorbar(xx, yy, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
 
     plt.legend(fontsize=16)
     plt.xlabel('N (queries)', fontsize=16)
-    ylabel = r'MSE' if (scoring == 'mse') else r'$R^2$'
+    ylabel = dict(mse=r'MSE', mae=r'MAE', r2=r'$R^2$')[scoring]
     plt.ylabel(ylabel, fontsize=16)
-    if scoring == 'r2':
-        plt.ylim(0.4, 1)
-    elif scoring == 'mse':
-        plt.ylim(1e-5, 3e-4)
-    else:
-        raise RuntimeError(f'{scoring} scoring method not found')
-        
+    
+    ylim = dict(mse=(1e-5, 3e-4), mae=(2e-3, 9e-3), r2=(0.4, 1))[scoring]
+    if ylim is not None:
+        plt.ylim(*ylim)
     
     return plt, ax
 ```
@@ -117,7 +115,7 @@ err = np.std(overall_scores)
 ```
 
 ```python
-plt, ax = plot_scores(output, error_freq=40, opt=opt, opt_error=err, scoring=scoring)
+plt, ax = plot_scores(output, error_freq=40, opt=opt, opt_error=err, scoring=scoring, ylog=ylog)
 plt.title('Active Learning Curves for 2D Composite')
 plt.savefig(output_file, dpi=200)
 ```

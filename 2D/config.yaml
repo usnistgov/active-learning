@@ -1,6 +1,7 @@
 n_iterations: 80
 scoring: "r2"
 n_query: 200
-job_id: "00000015"
-reason: "try with nu=1.5 for Matern"
-nu: 1.5
+job_name: "job_2023-08-31_r2_v000"
+reason: "run with r2 just to check the results"
+nu: 0.5
+ylog: false
