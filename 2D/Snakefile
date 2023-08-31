@@ -1,19 +1,17 @@
 # run with `snakemake --cores 1`
 
 from pathlib import Path
-from datetime import datetime
-import uuid
 
 configfile: "config.yaml"
 
 n_iterations = config['n_iterations']
 scoring = config['scoring']
 n_query = config['n_query']
-job_id = config['job_id']
+job_name = config['job_name']
 nu = config['nu']
 ylog = config['ylog']
 
-work_dir = lambda x: str( Path(f"run_{job_id}") / x)
+work_dir = lambda x: str( Path(f"{job_name}") / x)
 
 rule all:
     input:

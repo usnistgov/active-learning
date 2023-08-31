@@ -1,7 +1,7 @@
 n_iterations: 80
-scoring: "mae"
+scoring: "r2"
 n_query: 200
-job_id: "00000017"
-reason: "use mae"
+job_name: "job_2023-08-31_r2_v000"
+reason: "run with r2 just to check the results"
 nu: 0.5
-ylog: true
+ylog: false
