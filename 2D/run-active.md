@@ -14,9 +14,9 @@ jupyter:
 ---
 
 ```python tags=["parameters"]
-n_query = 100
-input_file = 'data/data_pca-500-51-51.npz'
-output_file = 'data/active_data.h5'
+n_query = 20
+input_file = 'data-pca.npz'
+output_file = 'active_data_sample.h5'
 scoring = 'mse'
 nu = 0.5
 ```
@@ -34,7 +34,7 @@ def run_all(x_data_pca, y_data, train_sizes, learners, n_query, scoring, nu=0.5)
     data = split(x_data_pca, y_data, train_sizes)
     test_scores = dict()
     for k in tqdm(learners, position=1, desc="learner loop"):
-        test_scores[k] = run(data, learners[k][0], learners[k][1], n_query, scoring, nu=nu)[1]
+        test_scores[k] = run(data, learners[k][0], learners[k][1], n_query, scoring, nu=nu)
     return test_scores
 ```
 
@@ -98,8 +98,9 @@ def run(data, query_func, model_func, n_iter, scoring, train_sizes=(0.87, 0.004)
     model = model_func(scoring, nu=nu)
     train_scores = []
     test_scores = []
+    x_train_save = {'0': x_train}
     
-    for _ in trange(n_iter, position=2, desc='iter loop'):
+    for i in trange(n_iter, position=2, desc='iter loop'):
         model, x_pool, x_train, y_pool, y_train, test_score, train_score  = evaluate_model(
             x_pool, x_test, x_train, y_pool, y_test, y_train,
             model, 
@@ -108,8 +109,13 @@ def run(data, query_func, model_func, n_iter, scoring, train_sizes=(0.87, 0.004)
         
         train_scores += [train_score]
         test_scores += [test_score]
+        x_train_save[str(i + 1)] = x_train
        
-    return train_scores, test_scores
+    return dict(
+        train=train_scores,
+        test=test_scores,
+        train_save=x_train_save
+    )
 
 def evaluate_model(x_pool, x_test, x_train, y_pool, y_test, y_train, model, query_func):
     model.fit(x_train, y_train)
@@ -144,6 +150,14 @@ y_data = data['y_data']
 
 ```python
 data = run_all(x_data_pca, y_data, (0.795, 0.2), learners_gp, n_query, scoring, nu=nu)
+```
+
+```python
+data['gsx']['train_save']
+```
+
+```python
+!rm $output_file
 ```
 
 ```python
