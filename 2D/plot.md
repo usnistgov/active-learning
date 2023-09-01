@@ -40,7 +40,8 @@ data_list = [hdfdict.load(input_file) for input_file in input_files]
 ```
 
 ```python
-def merge_func(x):
+def merge_func(data):
+    x = data['test']
     return dict(
         mean=np.mean(x, axis=0),
         std=np.std(x, axis=0),
@@ -105,6 +106,7 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse', 
     if ylim is not None:
         plt.ylim(*ylim)
     
+   
     return plt, ax
 ```
 
