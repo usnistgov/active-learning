@@ -3,7 +3,7 @@ import numpy as np
 from pymks.fmks.func import sequence
 from toolz.curried import curry, pipe, valmap, itemmap, iterate, do, merge_with
 from toolz.curried import map as map_
-from dask_ml.model_selection import train_test_split
+from sklearn.model_selection import train_test_split
 import tqdm
 # from modAL.models import ActiveLearner, CommitteeRegressor, BayesianOptimizer
 # from modAL.disagreement import max_std_sampling
