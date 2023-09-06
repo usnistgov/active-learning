@@ -16,10 +16,10 @@ jupyter:
 # Generate PCA Data
 
 ```python tags=["parameters"]
-cutoff = 20
+cutoff = 25
 n_components = 15
 input_file = 'data_shuffled.npz'
-output_file = 'data_pca_test.npz'
+output_file = 'data_pca.npz'
 n_chunk = 100
 ```
 

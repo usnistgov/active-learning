@@ -1,0 +1,16 @@
+name: active-learning
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3
+  - snakemake
+  - jupytext
+  - papermill
+  - notebook
+  - dask
+  - scikit-learn
+  - tqdm
+  - ipywidgets
+  - pip:
+    - git+https://github.com/wd15/pymks@flakes

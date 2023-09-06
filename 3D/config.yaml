@@ -1,5 +1,9 @@
-prefix: 'data'
-n_sample: 20
+n_iterations: 20
 # 'mse' or 'r2'
-scoring: 'mse'
-iterations: 400
+scoring: 'r2'
+n_query: 400
+job_name: "job_2023-09-05_r2_nu-0_5_v000"
+reason: "Run with nu of 0.5"
+cutoff: 25
+nu: 0.5
+ylog: false

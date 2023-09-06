@@ -16,3 +16,13 @@ data*/
 run_????????
 debug-*
 job_*
+!3D/data_shuffled.npz
+!2D/data-gen/data-500.npz
+
+#  Find files that are ignored but added to the repository
+#
+#  git log --pretty=format: --name-only --diff-filter=A `# all files ever` \
+#  | sed '/^$/d' `# skip git-logs empty lines` \
+#  | sort -u `# sort + unique` \
+#  | tr '\n' '\0' `# null separate for xargs` \
+#  | xargs -0 git check-ignore # check if they are ignored

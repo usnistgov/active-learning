@@ -1,19 +1,24 @@
+# run with `snakemake --cores 1`
+
 from pathlib import Path
 
 configfile: "config.yaml"
 
-prefix = config["prefix"]
-n_sample = config["n_sample"]
-scoring = config["scoring"]
-iterations = config["iterations"]
+n_iterations = config['n_iterations']
+scoring = config['scoring']
+n_query = config['n_query']
+job_name = config['job_name']
+cutoff = config['cutoff']
+nu = config['nu']
+ylog = config['ylog']
 
-work_dir = lambda x: str( Path(f"{prefix}-{n_sample}-{scoring}-{iterations}") / x )
-
+work_dir = lambda x: str( Path(f"{job_name}") / x)
 
 
 rule all:
     input:
-        work_dir(f"plot.png")
+        work_dir(f"plot.png"),
+        work_dir("config.yaml")
 
 rule ipynb:
     input:
@@ -23,28 +28,41 @@ rule ipynb:
     shell:
         "jupytext {input} --to ipynb"
 
+rule copy:
+    input:
+       config="config.yaml"
+    output:
+       config=work_dir("config.yaml"),
+    shell:
+       "cp {input.config} {output.config};"
+       "echo \"commit_hash: $(git log -1 --pretty=format:\\\"%h\\\")\" >> {output.config};"
+       "echo \"date: \\\"$(date)\\\"\" >> {output.config}"
+
 rule pca:
     input:
         da="data_shuffled.npz",
         nb="generate-pca-data.ipynb"
     output:
         da=work_dir("pca.npz"),
-        nb=work_dir("generate-pca-data.ipynb")
+        nb=work_dir("generate-pca-data.ipynb"),
+    params:
+        cutoff=cutoff
     shell:
-        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da}"
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p cutoff {params.cutoff}"
 
 rule run_active:
     input:
         da=work_dir("pca.npz"),
         nb="run-active.ipynb"
     output:
-        da=work_dir("active_{sample}.h5"),
-        nb=work_dir("run-active-{sample}.ipynb")
+        da=work_dir("active_{iteration}.h5"),
+        nb=work_dir("run-active-{iteration}.ipynb")
     params:
-        iterations=iterations,
-        scoring=scoring
+        n_query=n_query,
+        scoring=scoring,
+        nu=nu
     shell:
-        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p use_mse {params.scoring} -p iterations {params.iterations}"
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p scoring {params.scoring} -p n_query {params.n_query} -p nu {params.nu}"
 
 rule overall:
     input:
@@ -54,22 +72,24 @@ rule overall:
         da=work_dir("overall.npz"),
         nb=work_dir("overall.ipynb")
     params:
-        n_sample=n_sample,
-        scoring=scoring
+        n_iterations=n_iterations,
+        scoring=scoring,
+        nu=nu
     shell:
-        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p scoring {params.scoring} -p iterations {params.n_sample}"
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p scoring {params.scoring} -p n_iterations {params.n_iterations} -p nu {params.nu}"
 
 
 rule plot:
     input:
-        da=[work_dir(f"active_{i}.h5") for i in range(n_sample)],
+        da=[work_dir(f"active_{i}.h5") for i in range(n_iterations)],
         nb="plot.ipynb",
         ov=work_dir(f"overall.npz")
     output:
         da=work_dir(f"plot.png"),
         nb=work_dir("plot.ipynb")
     params:
-        scoring=scoring
+        scoring=scoring,
+        ylog=ylog
     shell:
         "FILES=$(echo '{input.da}' | tr ' ' ,);"
-        "papermill {input.nb} {output.nb} -p output_file {output.da} -p scoring {params.scoring} -p overall_input_file {input.ov} -y \"input_files: [ ${{FILES}} ]\";"
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p scoring {params.scoring} -p overall_input_file {input.ov} -p ylog {params.ylog} -y \"input_files: [ ${{FILES}} ]\";"

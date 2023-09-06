@@ -67,7 +67,7 @@ rule run_active:
         da=work_dir("data-pca.npz"),
         nb="run-active.ipynb"
     output:
-        da=work_dir("active_{iteration}.h5"),
+        da=work_dir("active_{iteration}.npz"),
         nb=work_dir("run-active-{iteration}.ipynb")
     params:
         n_query=n_query,
@@ -94,7 +94,7 @@ rule overall:
 
 rule plot:
     input:
-        da=[work_dir(f"active_{i}.h5") for i in range(n_iterations)],
+        da=[work_dir(f"active_{i}.npz") for i in range(n_iterations)],
         nb="plot.ipynb",
         ov=work_dir("overall.npz")
     output:
