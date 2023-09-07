@@ -9,6 +9,7 @@ dependencies:
   - papermill
   - notebook
   - dask
+  - dask-ml
   - scikit-learn
   - tqdm
   - ipywidgets
