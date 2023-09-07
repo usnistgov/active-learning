@@ -31,8 +31,10 @@
             jupytext
             papermill
             ipywidgets
-            scikit-learn
-            dask
+            scikit-learn==1.1.3
+            dask==2022.5.2
+            dask_ml==2022.5.27
+            pandas
             ipdb
             setuptools
           '';
