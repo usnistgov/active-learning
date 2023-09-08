@@ -30,13 +30,17 @@ rule ipynb:
 
 rule copy:
     input:
-       config="config.yaml"
+        inputfile="config.yaml"
     output:
-       config=work_dir("config.yaml"),
+        config_file=work_dir("config.yaml")
+    params:
+        config=config,
+        pythonpath=os.environ["PYTHONPATH"]
     shell:
-       "cp {input.config} {output.config};"
-       "echo \"commit_hash: $(git log -1 --pretty=format:\\\"%h\\\")\" >> {output.config};"
-       "echo \"date: \\\"$(date)\\\"\" >> {output.config}"
+        "IFS=: read -r python_ other <<< $PYTHONPATH;"
+        "$python_ -c \"import yaml; print(yaml.dump({params.config}))\" >> {output.config_file};"
+        "echo \"commit_hash: $(git log -1 --pretty=format:\\\"%h\\\")\" >> {output.config_file};"
+        "echo \"date: \\\"$(date)\\\"\" >> {output.config_file}"
 
 rule pca:
     input:
@@ -44,7 +48,7 @@ rule pca:
         nb="generate-pca-data.ipynb"
     output:
         da=work_dir("pca.npz"),
-        nb=work_dir("generate-pca-data.ipynb"),
+        nb=work_dir("generate-pca-data.ipynb")
     params:
         cutoff=cutoff
     shell:
