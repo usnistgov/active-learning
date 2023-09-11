@@ -19,22 +19,10 @@
         mach = mach-nix.lib.${system};
         pymks_ = pymks.packages.${system}.pymks;
         sfepy = pymks.packages.${system}.sfepy;
-        modal = mach.buildPythonPackage {
-          python = pythonVersion;
-          name = "modal";
-          version = "0.4.2.1";
-          src = pkgs.pythonPackages.fetchPypi {
-            version = "0.4.2.1";
-            pname = "modAL-python";
-            hash = "sha256-sYTa0Ve7xY+S5oiDWkiF/UhBMxJmHBokuVdbz+6dmtE=";
-          };
-        };
-
 
         pythonEnv = mach.mkPython {
           python = pythonVersion;
-          packagesExtra = [ pymks_ sfepy modal ];
-
+          packagesExtra = [ pymks_ sfepy ];
 
           providers.jupyterlab = "nixpkgs";
 
@@ -42,12 +30,11 @@
             tqdm
             jupytext
             papermill
-            hdfdict
             ipywidgets
-            dask-ml==1.6.0
-            scikit-learn==1.0.2
-            dask==2.22.0
+            scikit-learn
+            dask
             ipdb
+            setuptools
           '';
         };
       in

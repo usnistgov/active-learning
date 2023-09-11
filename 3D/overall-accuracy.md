@@ -14,10 +14,11 @@ jupyter:
 ---
 
 ```python tags=["parameters"]
-input_file = 'data_pca_test.npz'
+input_file = 'data_pca.npz'
 scoring = 'mse'
-iterations = 20
+n_iterations = 20
 output_file = 'overall-accuracy.npz'
+nu = 0.5
 ```
 
 ```python
@@ -35,10 +36,10 @@ y_data = data['y_data']
 test_scores = []
 train_scores = []
 
-for i in range(iterations):
+for i in range(n_iterations):
     print(i)
     x_pool, x_test, x_train, y_pool, y_test, y_train = split(x_data_pca, y_data, (0.8, 0.2))
-    model = make_gp_model_matern(scoring)
+    model = make_gp_model_matern(scoring, nu=nu)
     model.fit(x_pool, y_pool)
     train_score = model.score(x_pool, y_pool)
     test_score = model.score(x_test, y_test)

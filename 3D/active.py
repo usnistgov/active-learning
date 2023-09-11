@@ -5,13 +5,9 @@ from toolz.curried import curry, pipe, valmap, itemmap, iterate, do, merge_with
 from toolz.curried import map as map_
 from dask_ml.model_selection import train_test_split
 import tqdm
-from modAL.models import ActiveLearner, CommitteeRegressor, BayesianOptimizer
-from modAL.disagreement import max_std_sampling
-from modAL.models import BayesianOptimizer
-from modAL.acquisition import max_EI
 from sklearn.gaussian_process.kernels import Matern
 from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.metrics import mean_squared_error, make_scorer
+from sklearn.metrics import mean_squared_error, make_scorer, mean_absolute_error
 import types
 
 
@@ -175,18 +171,9 @@ query_random = lambda model, x_: pipe(
     lambda i: (i, x_[i])
 )
 
-
-make_active = make_learner(ActiveLearner)
-
-
-make_bayes = make_learner(BayesianOptimizer, max_EI)
-make_uncertainty = make_active(query_uncertainty)
-make_random = make_active(query_random)
-
 def make_gsx(distance_transformer):
     return make_active(gsx_query(distance_transformer))
 
-make_gsy = make_active(gsy_query)
 
 def make_igs(distance_transformer):
     return make_active(igs_query(distance_transformer))
@@ -239,13 +226,11 @@ def split(x_data, y_data, train_sizes=(0.9, 0.09), random_state=None):
     return x_pool, x_test, x_calibrate, y_pool, y_test, y_calibrate
 
 
-def make_gp_model_matern(scoring, nu=None):
-    if nu is None:
-        kernel = Matern(length_scale=1.0)
-    else:
-        kernel = Matern(length_scale=1.0, nu=0.5)
+def make_gp_model_matern(scoring, nu=0.5):
+    kernel = Matern(length_scale=1.0, nu=nu)
     regressor = GaussianProcessRegressor(kernel=kernel)
-    if scoring == 'mse':
-        mse_scorer = make_scorer(mean_squared_error)
-        regressor.score = types.MethodType(mse_scorer, regressor)
+    score_func = dict(mse=mean_squared_error, mae=mean_absolute_error, r2=None)[scoring]
+    if score_func is not None:
+        scorer = make_scorer(score_func)
+        regressor.score = types.MethodType(scorer, regressor)
     return regressor

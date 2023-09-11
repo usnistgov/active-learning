@@ -14,9 +14,9 @@ jupyter:
 ---
 
 ```python tags=["parameters"]
-n_query = 20
-input_file = 'data-pca.npz'
-output_file = 'active_data_sample.h5'
+n_query = 100
+input_file = 'data/data_pca-500-51-51.npz'
+output_file = 'data/active_data.npz'
 scoring = 'mse'
 nu = 0.5
 ```
@@ -25,8 +25,8 @@ nu = 0.5
 from tqdm.notebook import trange, tqdm
 import numpy as np
 from active import make_gp_model_matern, split, split_on_ids, next_sample_gsx, next_sample_igs
-import h5py
-import hdfdict
+#import h5py
+#import hdfdict
 ```
 
 ```python
@@ -94,23 +94,23 @@ def query_random(model, x_pool, y_pool):
 
 def run(data, query_func, model_func, n_iter, scoring, train_sizes=(0.87, 0.004), nu=0.5):
     x_pool, x_test, x_train, y_pool, y_test, y_train = data
-    
+
     model = model_func(scoring, nu=nu)
     train_scores = []
     test_scores = []
     x_train_save = {'0': x_train}
-    
+
     for i in trange(n_iter, position=2, desc='iter loop'):
         model, x_pool, x_train, y_pool, y_train, test_score, train_score  = evaluate_model(
             x_pool, x_test, x_train, y_pool, y_test, y_train,
-            model, 
+            model,
             query_func
         )
-        
+
         train_scores += [train_score]
         test_scores += [test_score]
         x_train_save[str(i + 1)] = x_train
-       
+
     return dict(
         train=train_scores,
         test=test_scores,
@@ -153,21 +153,5 @@ data = run_all(x_data_pca, y_data, (0.795, 0.2), learners_gp, n_query, scoring, 
 ```
 
 ```python
-data['gsx']['train_save']
-```
-
-```python
-!rm $output_file
-```
-
-```python
-# from https://github.com/SiggiGue/hdfdict/issues/6
-f = h5py.File(output_file, 'w')
-hdfdict.dump(data, output_file)
-f.close()
-
-```
-
-```python
-
+np.savez(output_file, **data)
 ```

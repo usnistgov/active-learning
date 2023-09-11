@@ -1,6 +1,9 @@
 n_iterations: 20
 # 'mse' or 'r2'
-scoring: 'mse'
+scoring: 'r2'
 n_query: 400
-job_id: "00000001"
-reason: "Intial test of new workflow"
+job_name: "job_2023-09-05_r2_nu-0_5_v000"
+reason: "Run with nu of 0.5"
+cutoff: 25
+nu: 0.5
+ylog: false
