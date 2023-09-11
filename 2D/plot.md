@@ -14,16 +14,10 @@ jupyter:
 ---
 
 ```python tags=["parameters"]
-input_files = [
-    'data-5-mse-100-500/active_0.h5',
-    'data-5-mse-100-500/active_1.h5',
-    'data-5-mse-100-500/active_2.h5',
-    'data-5-mse-100-500/active_3.h5',
-    'data-5-mse-100-500/active_4.h5',
-]
+input_files = ['job_2023-09-08_test-merge_v000/active_0.npz']
 output_file = 'plot.png'
-overall_input_file = "overall-accuracy.npz"
-scoring = 'mse'
+overall_input_file = 'job_2023-09-08_test-merge_v000/overall.npz'
+scoring = 'r2'
 ylog = False
 ```
 
@@ -35,12 +29,15 @@ import matplotlib
 ```
 
 ```python
+
+```
+
+```python
 data_list = [np.load(input_file) for input_file in input_files]
 ```
 
 ```python
-def merge_func(data):
-    x = data['test']
+def merge_func(x):
     return dict(
         mean=np.mean(x, axis=0),
         std=np.std(x, axis=0),
