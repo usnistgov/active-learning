@@ -35,6 +35,7 @@
             dask
             ipdb
             setuptools
+            pot
           '';
         };
       in
