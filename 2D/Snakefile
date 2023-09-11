@@ -68,13 +68,14 @@ rule run_active:
         nb="run-active.ipynb"
     output:
         da=work_dir("active_{iteration}.npz"),
+        ts=work_dir("active_train_save_{iteration}.npz"),
         nb=work_dir("run-active-{iteration}.ipynb")
     params:
         n_query=n_query,
         scoring=scoring,
         nu=nu
     shell:
-        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p scoring {params.scoring} -p n_query {params.n_query} -p nu {params.nu}"
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p scoring {params.scoring} -p n_query {params.n_query} -p nu {params.nu} -p output_file_train_save {output.ts}"
 
 
 rule overall:
