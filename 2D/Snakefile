@@ -16,7 +16,8 @@ work_dir = lambda x: str( Path(f"{job_name}") / x)
 rule all:
     input:
         work_dir("plot.png"),
-        work_dir("config.yaml")
+        work_dir("config.yaml"),
+        work_dir("plot-wasserstein.png")
 
 rule ipynb:
     input:
@@ -107,3 +108,15 @@ rule plot:
     shell:
         "FILES=$(echo '{input.da}' | tr ' ' ,);"
         "papermill {input.nb} {output.nb} -p output_file {output.da} -p scoring {params.scoring} -p overall_input_file {input.ov} -p ylog {params.ylog} -y \"input_files: [ ${{FILES}} ]\";"
+
+rule plot_wasserstein:
+    input:
+        da=[work_dir(f"active_train_save_{i}.npz") for i in range(n_iterations)],
+        nb="calc-wasserstein.ipynb",
+        pca=work_dir("data-pca.npz")
+    output:
+        da=work_dir("plot-wasserstein.png"),
+        nb=work_dir("calc-wasserstein.ipynb")
+    shell:
+        "FILES=$(echo '{input.da}' | tr ' ' ,);"
+        "papermill {input.nb} {output.nb} -p plot_file {output.da} -p pca_input_file {input.pca} -y \"active_input_files: [ ${{FILES}} ]\";"
