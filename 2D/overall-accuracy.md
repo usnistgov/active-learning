@@ -33,20 +33,6 @@ y_data = data['y_data']
 ```
 
 ```python
-print(x_data_pca.shape)
-```
-
-```python
-#from sklearn.gaussian_process.kernels import Matern
-#from sklearn.gaussian_process import GaussianProcessRegressor
-#def make_gp_model_matern():
-#    kernel = Matern(length_scale=1.0)
-#    #kernel = 0.5 * RBF(length_scale=1) + WhiteKernel(noise_level=1)
-##    regressor = GaussianProcessRegressor(kernel=kernel)
-#    return regressor
-```
-
-```python
 test_scores = []
 train_scores = []
 
@@ -63,12 +49,4 @@ for i in range(n_iterations):
 
 ```python
 np.savez(output_file, test_scores=test_scores)
-```
-
-```python
-print(test_scores)
-```
-
-```python
-
 ```

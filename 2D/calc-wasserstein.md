@@ -14,43 +14,86 @@ jupyter:
 ---
 
 ```python tags=["parameters"]
-input_files = ['job_2023-09-08_test-merge_v000/active_0.npz']
-output_file = 'plot.png'
-overall_input_file = 'job_2023-09-08_test-merge_v000/overall.npz'
-scoring = 'r2'
-ylog = False
+pca_input_file = "data-pca.npz"
+active_input_files = [
+    "job_2023-09-08_test-merge_v000/active_train_save_0.npz",
+    "job_2023-09-08_test-merge_v000/active_train_save_1.npz",
+    "job_2023-09-08_test-merge_v000/active_train_save_2.npz",
+    "job_2023-09-08_test-merge_v000/active_train_save_3.npz",
+    "job_2023-09-08_test-merge_v000/active_train_save_4.npz",
+    "job_2023-09-08_test-merge_v000/active_train_save_5.npz"
+]
+plot_file = "wasserstein.png"
 ```
 
 ```python
 import numpy as np
-from toolz.curried import merge_with
+from toolz.curried import pipe, pluck, curry, valmap
+from toolz.curried import map as map_
+import ot
 import matplotlib.pyplot as plt
 import matplotlib
 ```
 
 ```python
-
-```
-
-```python
-data_list = [np.load(input_file) for input_file in input_files]
-```
-
-```python
-def merge_func(x):
-    return dict(
-        mean=np.mean(x, axis=0),
-        std=np.std(x, axis=0),
-        scores=np.array(x)
+@curry
+def wasserstein(arr1, arr2):
+    """Calculate the Wasserstein distance between two arrays
+    
+    Args:
+      arr1: an (n x m) array
+      arr1: an (l x m) array
+      
+    Second index must be equal length
+    """
+    f = lambda x: np.ones((x.shape[0]),) / x.shape[0]
+    g = lambda x: x / x.max()
+    return ot.emd2(
+        f(arr1),
+        f(arr2),
+        g(ot.dist(arr1, arr2))
     )
 
-output = merge_with(merge_func, *data_list)
+
+def swap(list_):
+    """Swap a list of dictionaries with same keys to be a dictionary of lists
+    """
+    f = lambda k: (k, list(pluck(k, list_)))
+    return pipe(
+        list_[0].keys(),
+        map_(f),
+        list,
+        dict
+    )
+
+
+@curry
+def aggregate(data_pca, data_active_):
+    by_index = lambda index: list(map_(wasserstein(data_pca), data_active_[index]))
+    fmean = lambda x: dict(mean=x.mean(axis=0), std=x.std(axis=0))
+    return pipe(
+        len(data_active_),
+        range,
+        map_(by_index),
+        list,
+        np.array,
+        fmean
+    )
+
 
 ```
 
 ```python
-def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse', ylog=False):
+data_pca = np.load(pca_input_file)['x_data_pca']
+data_active = [np.load(file_, allow_pickle=True) for file_ in active_input_files]
+```
 
+```python
+data_agg = valmap(aggregate(data_pca), swap(data_active))
+```
+
+```python
+def plot_wasserstein(scores, opt=None, opt_error=None, error_freq=20, ylog=False):
     plt.style.use('ggplot')
     plt.rcParams['axes.facecolor']='w'
     plt.figure(figsize=(10, 8))
@@ -95,31 +138,15 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse', 
 
     plt.legend(fontsize=16)
     plt.xlabel('N (queries)', fontsize=16)
-    ylabel = dict(mse=r'MSE', mae=r'MAE', r2=r'$R^2$')[scoring]
-    plt.ylabel(ylabel, fontsize=16)
-    
-    ylim = dict(mse=(1e-5, 3e-4), mae=(2e-3, 9e-3), r2=(0.4, 1))[scoring]
-    if ylim is not None:
-        plt.ylim(*ylim)
-    
+    plt.ylabel(r'Wasserstein Distance', fontsize=16)
    
     return plt, ax
 ```
 
 ```python
-overall_scores = np.load(overall_input_file)['test_scores']
-opt = np.mean(overall_scores)
-err = np.std(overall_scores)
-```
-
-```python
-plt, ax = plot_scores(output, error_freq=40, opt=opt, opt_error=err, scoring=scoring, ylog=ylog)
-plt.title('Active Learning Curves for 2D Composite')
-plt.savefig(output_file, dpi=200)
-```
-
-```python
-
+plot_wasserstein(data_agg)
+plt.title('Wasserstein Distances for 2D Composite')
+plt.savefig(plot_file, dpi=200)
 ```
 
 ```python

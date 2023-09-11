@@ -30,12 +30,13 @@
             tqdm
             jupytext
             papermill
+            hdfdict
             ipywidgets
+            dask-ml
             scikit-learn
             dask
             ipdb
             setuptools
-            pot
           '';
         };
       in

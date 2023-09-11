@@ -5,10 +5,6 @@ from toolz.curried import curry, pipe, valmap, itemmap, iterate, do, merge_with
 from toolz.curried import map as map_
 from sklearn.model_selection import train_test_split
 import tqdm
-# from modAL.models import ActiveLearner, CommitteeRegressor, BayesianOptimizer
-# from modAL.disagreement import max_std_sampling
-# from modAL.models import BayesianOptimizer
-# from modAL.acquisition import max_EI
 from sklearn.gaussian_process.kernels import Matern
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.metrics import mean_squared_error, make_scorer, mean_absolute_error
@@ -175,18 +171,9 @@ query_random = lambda model, x_: pipe(
     lambda i: (i, x_[i])
 )
 
-
-# make_active = make_learner(ActiveLearner)
-
-
-# make_bayes = make_learner(BayesianOptimizer, max_EI)
-# make_uncertainty = make_active(query_uncertainty)
-# make_random = make_active(query_random)
-
 def make_gsx(distance_transformer):
     return make_active(gsx_query(distance_transformer))
 
-# make_gsy = make_active(gsy_query)
 
 def make_igs(distance_transformer):
     return make_active(igs_query(distance_transformer))
