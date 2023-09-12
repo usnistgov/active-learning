@@ -1,7 +1,7 @@
-n_iterations: 80
+n_iterations: 1 # was 80
 scoring: "r2"
-n_query: 200
-job_name: "job_2023-08-31_r2_v000"
-reason: "run with r2 just to check the results"
+n_query: 10 # was 200
+job_name: "job_2023-08-31_test-run-with-hao_v000"
+reason: "testing with hao"
 nu: 0.5
 ylog: false

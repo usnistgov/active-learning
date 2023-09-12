@@ -16,7 +16,7 @@ jupyter:
 ```python tags=["parameters"]
 n_query = 40
 input_file = 'data_pca_test.npz'
-output_file = 'active_data.h5'
+output_file = 'active_data.npy'
 scoring = 'mse'
 nu = 0.5
 ```
@@ -25,8 +25,6 @@ nu = 0.5
 from tqdm.notebook import trange, tqdm
 import numpy as np
 from active import make_gp_model_matern, split, split_on_ids, next_sample_gsx, next_sample_igs
-import h5py
-import hdfdict
 ```
 
 ```python
@@ -147,11 +145,7 @@ data = run_all(x_data_pca, y_data, (0.795, 0.2), learners_gp, n_query, scoring, 
 ```
 
 ```python
-# from https://github.com/SiggiGue/hdfdict/issues/6
-f = h5py.File(output_file, 'w')
-hdfdict.dump(data, output_file)
-f.close()
-
+np.savez(output_file, **data)
 ```
 
 ```python

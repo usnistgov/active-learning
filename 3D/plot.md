@@ -22,7 +22,6 @@ ylog = False
 ```
 
 ```python
-import hdfdict
 import numpy as np
 from toolz.curried import merge_with
 import matplotlib.pyplot as plt
@@ -30,7 +29,7 @@ import matplotlib
 ```
 
 ```python
-data_list = [hdfdict.load(input_file) for input_file in input_files]
+data_list = [np.load(input_file) for input_file in input_files]
 ```
 
 ```python

@@ -18,6 +18,9 @@ debug-*
 job_*
 !3D/data_shuffled.npz
 !2D/data-gen/data-500.npz
+slurm-??????.out
+*~
+
 
 #  Find files that are ignored but added to the repository
 #
