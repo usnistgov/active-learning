@@ -8,8 +8,25 @@
 #SBATCH --chdir=/working/wd15/active-learning/3D   # -D, full path to an existing directory
 #SBATCH --qos=test
 #SBATCH --mem=0G
+#SBATCH --output=log/slurm-%j.out
 
-~/bin/nix-root nix develop ../flake.nix --command bash -c "snakemake --nolock --cores 10 --configfile config-slurm.yaml"
+job_name="job_2023-09-12_id-${SLURM_JOB_ID}_nu-0_5_r2_cutoff-20_v001"
+reason="test new submit.sh file"
+nu=0.5
+cutoff=20
+
+~/bin/nix-root nix develop ../flake.nix --command bash -c "snakemake \
+  --nolock \
+  --cores 10 \
+  --config \
+  job_name=$job_name \
+  n_iterations=20 \
+  n_query=400 \
+  nu=$nu \
+  scoring=r2 \
+  cutoff=$cutoff \
+  reason=\"$reason\" \
+"
 
 
 	
