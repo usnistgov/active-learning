@@ -30,14 +30,13 @@
             tqdm
             jupytext
             papermill
+            hdfdict
             ipywidgets
-            scikit-learn==1.1.3
-            dask==2022.5.2
-            dask_ml==2022.5.27
-            pandas
+            dask-ml
+            scikit-learn
+            dask
             ipdb
             setuptools
-            pot
           '';
         };
       in
