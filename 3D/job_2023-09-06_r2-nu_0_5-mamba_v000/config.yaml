@@ -1,0 +1,11 @@
+n_iterations: 20
+# 'mse' or 'r2'
+scoring: 'r2'
+n_query: 400
+job_name: "job_2023-09-06_r2-nu_0_5-mamba_v000"
+reason: "test mamba with real run"
+cutoff: 25
+nu: 0.5
+ylog: false
+commit_hash: "0d6b50b"
+date: "Wed Sep  6 03:09:49 PM EDT 2023"

@@ -1,0 +1,9 @@
+n_iterations: 1 # was 80
+scoring: "r2"
+n_query: 10 # was 200
+job_name: "job_2023-08-31_test-run-with-hao_v000"
+reason: "testing with hao"
+nu: 0.5
+ylog: false
+commit_hash: "0d6b50b"
+date: "Wed Sep  6 01:30:38 PM EDT 2023"

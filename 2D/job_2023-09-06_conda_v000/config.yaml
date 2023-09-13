@@ -1,0 +1,9 @@
+n_iterations: 20 # 80 is optimal
+scoring: "r2"
+n_query: 200 # 200 is optimal
+job_name: "job_2023-09-06_conda_v000" # format: job_{date}_keywords_v{3 digit version}"
+reason: "Test in conda environment"
+nu: 0.5
+ylog: false
+commit_hash: "67dd04a"
+date: "Wed Sep  6 10:16:14 AM EDT 2023"

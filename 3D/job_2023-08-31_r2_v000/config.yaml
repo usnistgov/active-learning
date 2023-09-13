@@ -1,0 +1,11 @@
+n_iterations: 20
+# 'mse' or 'r2'
+scoring: 'r2'
+n_query: 400
+job_name: "job_2023-08-31_r2_v000"
+reason: "Intial test of new workflow"
+cutoff: 25
+nu: 0.5
+ylog: false
+commit_hash: "6b5234b"
+date: "Fri Sep  1 16:47:02 EDT 2023"

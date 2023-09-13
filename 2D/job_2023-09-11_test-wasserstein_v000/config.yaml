@@ -1,0 +1,9 @@
+n_iterations: 80
+scoring: "mse"
+n_query: 200
+job_name: "job_2023-09-11_test-wasserstein_v000"
+reason: "test that the wasserstein distance calcuation works correctly"
+nu: 0.5
+ylog: false
+commit_hash: "805de02"
+date: "Mon Sep 11 11:46:27 AM EDT 2023"

@@ -1,0 +1,9 @@
+n_iterations: 80
+scoring: "r2"
+n_query: 200
+job_name: "job_2023-09-05_no-hdfdict_v000"
+reason: "No dask-ml and no hdfdict"
+nu: 0.5
+ylog: false
+commit_hash: "67dd04a"
+date: "Tue Sep  5 13:23:59 EDT 2023"

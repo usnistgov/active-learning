@@ -1,0 +1,11 @@
+n_iterations: 1 # optimal is 20
+# 'mse' or 'r2'
+scoring: 'r2'
+n_query: 4 # optimal is 400
+job_name: "job_2023-09-06_test_v000"
+reason: "Run with nu of 0.5"
+cutoff: 25
+nu: 0.5
+ylog: false
+commit_hash: "0d6b50b"
+date: "Wed Sep  6 12:10:01 PM EDT 2023"

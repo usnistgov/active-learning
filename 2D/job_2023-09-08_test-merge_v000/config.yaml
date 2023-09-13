@@ -1,0 +1,9 @@
+n_iterations: 20
+scoring: "r2"
+n_query: 100
+job_name: "job_2023-09-08_test-merge_v000"
+reason: "testing that merge from main still works"
+nu: 0.5
+ylog: false
+commit_hash: "da1a781"
+date: "Fri Sep  8 04:40:33 PM EDT 2023"

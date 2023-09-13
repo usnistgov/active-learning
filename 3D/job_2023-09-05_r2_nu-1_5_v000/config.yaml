@@ -1,0 +1,11 @@
+n_iterations: 20
+# 'mse' or 'r2'
+scoring: 'r2'
+n_query: 400
+job_name: "job_2023-09-05_r2_nu-1_5_v000"
+reason: "Run with at nu of 1.5"
+cutoff: 25
+nu: 1.5
+ylog: false
+commit_hash: "6b5234b"
+date: "Tue Sep  5 08:57:51 EDT 2023"

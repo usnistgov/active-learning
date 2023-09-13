@@ -1,0 +1,9 @@
+n_iterations: 80
+scoring: "r2"
+n_query: 200
+job_name: "job_2023-09-05_test-conda_v000"
+reason: "testing conda environment"
+nu: 0.5
+ylog: false
+commit_hash: "8435b14"
+date: "Tue Sep  5 12:27:14 PM EDT 2023"

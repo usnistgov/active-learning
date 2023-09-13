@@ -1,0 +1,11 @@
+n_iterations: 20 # optimal value is 20
+# 'mse' or 'r2'
+scoring: 'r2'
+n_query: 400 # optimal value is 20
+job_name: "job_2023-09-07_testing-nix_v000"
+reason: "test nix"
+cutoff: 25
+nu: 0.5
+ylog: false
+commit_hash: "0ae5f72"
+date: "Thu Sep  7 12:14:52 EDT 2023"
