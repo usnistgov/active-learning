@@ -1,0 +1,11 @@
+cutoff: 20
+job_name: job_2023-09-12_id-429098_nu-0_5_r2_cutoff-20_v001
+n_iterations: 20
+n_query: 400
+nu: 0.5
+reason: test new submit.sh file
+scoring: r2
+ylog: false
+
+commit_hash: "23366cf"
+date: "Tue Sep 12 17:07:13 UTC 2023"

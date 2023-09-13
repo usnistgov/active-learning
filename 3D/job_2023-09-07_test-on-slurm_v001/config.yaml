@@ -1,0 +1,11 @@
+cutoff: 25
+job_name: job_2023-09-07_test-on-slurm_v001
+n_iterations: 1
+n_query: 10
+nu: 0.5
+reason: test on slurm
+scoring: r2
+ylog: false
+
+commit_hash: "0ae5f72"
+date: "Thu Sep  7 14:42:08 EDT 2023"

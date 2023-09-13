@@ -15,12 +15,12 @@ shuffled/
 data*/
 run_????????
 debug-*
-job_*
 !3D/data_shuffled.npz
 !2D/data-gen/data-500.npz
 slurm-??????.out
 *~
-
+3D/log
+__pycache__
 
 #  Find files that are ignored but added to the repository
 #

@@ -1,9 +1,9 @@
-n_iterations: 20 # optimal value is 20
+n_iterations: 20
 # 'mse' or 'r2'
 scoring: 'r2'
-n_query: 400 # optimal value is 20
-job_name: "job_2023-09-07_testing-nix_v000"
-reason: "test nix"
+n_query: 400
+job_name: "job_2023-09-07_mr-french-test_v000"
+reason: "Test on mr-french"
 cutoff: 25
 nu: 0.5
 ylog: false

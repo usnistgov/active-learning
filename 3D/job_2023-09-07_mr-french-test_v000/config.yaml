@@ -1,0 +1,11 @@
+cutoff: 25
+job_name: job_2023-09-07_mr-french-test_v000
+n_iterations: 1
+n_query: 10
+nu: 0.5
+reason: Test on mr-french
+scoring: r2
+ylog: false
+
+commit_hash: "0ae5f72"
+date: "Thu Sep  7 14:00:08 EDT 2023"

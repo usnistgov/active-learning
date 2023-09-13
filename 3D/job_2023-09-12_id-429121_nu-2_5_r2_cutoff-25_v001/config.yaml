@@ -1,0 +1,11 @@
+cutoff: 25
+job_name: job_2023-09-12_id-429121_nu-2_5_r2_cutoff-25_v001
+n_iterations: 20
+n_query: 400
+nu: 2.5
+reason: run with nu=2.5
+scoring: r2
+ylog: false
+
+commit_hash: "2a88c9d"
+date: "Tue Sep 12 19:53:23 UTC 2023"
