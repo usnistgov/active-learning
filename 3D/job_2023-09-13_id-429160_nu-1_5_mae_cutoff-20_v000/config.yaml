@@ -1,0 +1,11 @@
+cutoff: 20
+job_name: job_2023-09-13_id-429160_nu-1_5_mae_cutoff-20_v000
+n_iterations: 20
+n_query: 400
+nu: 1.5
+reason: figured out that nu=1.5 works well with cutoff=20 so running with mae now
+scoring: mae
+ylog: 'true'
+
+commit_hash: "211634b"
+date: "Wed Sep 13 18:40:35 UTC 2023"
