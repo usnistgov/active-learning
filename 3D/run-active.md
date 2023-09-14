@@ -16,7 +16,8 @@ jupyter:
 ```python tags=["parameters"]
 n_query = 40
 input_file = 'data_pca_test.npz'
-output_file = 'active_data.npy'
+output_file = 'active_data.npz'
+output_file_train_save = 'data/x_train_save.npz'
 scoring = 'mse'
 nu = 0.5
 ```
@@ -31,9 +32,16 @@ from active import make_gp_model_matern, split, split_on_ids, next_sample_gsx, n
 def run_all(x_data_pca, y_data, train_sizes, learners, n_query, scoring, nu=0.5):
     data = split(x_data_pca, y_data, train_sizes)
     test_scores = dict()
+    train_scores = dict()
+    x_train_save = dict()
     for k in tqdm(learners, position=1, desc="learner loop"):
-        test_scores[k] = run(data, learners[k][0], learners[k][1], n_query, scoring, nu=nu)[1]
-    return test_scores
+        test_scores_, train_scores_, x_train_save_ = run(
+            data, learners[k][0], learners[k][1], n_query, scoring, nu=nu
+        )
+        test_scores[k] = test_scores_
+        train_scores[k] = train_scores_
+        x_train_save[k] = x_train_save_
+    return test_scores, train_scores, x_train_save
 ```
 
 ```python
@@ -92,22 +100,24 @@ def query_random(model, x_pool, y_pool):
 
 def run(data, query_func, model_func, n_iter, scoring, train_sizes=(0.87, 0.004), nu=0.5):
     x_pool, x_test, x_train, y_pool, y_test, y_train = data
-    
+
     model = model_func(scoring, nu=nu)
     train_scores = []
     test_scores = []
-    
+    x_train_save = []
+
     for _ in trange(n_iter, position=2, desc='iter loop'):
         model, x_pool, x_train, y_pool, y_train, test_score, train_score  = evaluate_model(
             x_pool, x_test, x_train, y_pool, y_test, y_train,
-            model, 
+            model,
             query_func
         )
-        
+
         train_scores += [train_score]
         test_scores += [test_score]
-       
-    return train_scores, test_scores
+        x_train_save += [x_train]
+
+    return (test_scores, train_scores, x_train_save)
 
 def evaluate_model(x_pool, x_test, x_train, y_pool, y_test, y_train, model, query_func):
     model.fit(x_train, y_train)
@@ -141,13 +151,12 @@ y_data = data['y_data']
 ```
 
 ```python
-data = run_all(x_data_pca, y_data, (0.795, 0.2), learners_gp, n_query, scoring, nu=nu)
+test_scores, train_scores, x_train_save = run_all(
+    x_data_pca, y_data, (0.795, 0.2), learners_gp, n_query, scoring, nu=nu
+)
 ```
 
 ```python
-np.savez(output_file, **data)
-```
-
-```python
-
+np.savez(output_file, **test_scores)
+np.savez(output_file_train_save, **x_train_save)
 ```

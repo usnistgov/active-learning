@@ -26,8 +26,6 @@ nu = 0.5
 from tqdm.notebook import trange, tqdm
 import numpy as np
 from active import make_gp_model_matern, split, split_on_ids, next_sample_gsx, next_sample_igs
-#import h5py
-#import hdfdict
 ```
 
 ```python
@@ -108,7 +106,7 @@ def run(data, query_func, model_func, n_iter, scoring, train_sizes=(0.87, 0.004)
     test_scores = []
     x_train_save = []
 
-    for i in trange(n_iter, position=2, desc='iter loop'):
+    for _ in trange(n_iter, position=2, desc='iter loop'):
         model, x_pool, x_train, y_pool, y_train, test_score, train_score  = evaluate_model(
             x_pool, x_test, x_train, y_pool, y_test, y_train,
             model,
