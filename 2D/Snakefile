@@ -8,6 +8,7 @@ n_iterations = config['n_iterations']
 scoring = config['scoring']
 n_query = config['n_query']
 job_name = config['job_name']
+cutoff = config['cutoff']
 nu = config['nu']
 ylog = config['ylog']
 
@@ -27,18 +28,27 @@ rule ipynb:
     shell:
         "jupytext {input} --to ipynb"
 
-rule copy:
+
+rule copy_stress:
     input:
-       stress="data-gen/data-500.npz",
-       config="config.yaml"
+        stress="data-gen/data-500.npz",
     output:
-       config=work_dir("config.yaml"),
-       stress=work_dir("stress-data.npz")
+        stress=work_dir("data_shuffled.npz")
     shell:
-       "cp {input.stress} {output.stress};"
-       "cp {input.config} {output.config};"
-       "echo \"commit_hash: $(git log -1 --pretty=format:\\\"%h\\\")\" >> {output.config};"
-       "echo \"date: \\\"$(date)\\\"\" >> {output.config}"
+        "cp {input.stress} {output.stress};"
+
+
+rule config:
+    output:
+        config_file=work_dir("config.yaml")
+    params:
+        config=config,
+        pythonpath=os.environ["PYTHONPATH"]
+    shell:
+        "IFS=: read -r python_ other <<< $PYTHONPATH;"
+        "$python_ -c \"import yaml; print(yaml.dump({params.config}))\" >> {output.config_file};"
+        "echo \"commit_hash: $(git log -1 --pretty=format:\\\"%h\\\")\" >> {output.config_file};"
+        "echo \"date: \\\"$(date)\\\"\" >> {output.config_file}"
 
 # rule data_gen:
 #     input:
@@ -52,9 +62,10 @@ rule copy:
 #     shell:
 #         "papermill {input.nb} {output.nb} -p output_file {output.da} -p n_samples {params.n_samples}"
 
+
 rule pca:
     input:
-        da=work_dir("stress-data.npz"),
+        da=work_dir("data_shuffled.npz"),
         nb="pca-analysis.ipynb"
     output:
         nb=work_dir("pca-analysis.ipynb"),
