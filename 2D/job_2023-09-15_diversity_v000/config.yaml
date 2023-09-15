@@ -5,3 +5,5 @@ job_name: "job_2023-09-15_diversity_v000"
 reason: "Running with the new diversity plot"
 nu: 0.5
 ylog: true
+commit_hash: "7a76d83"
+date: "Fri Sep 15 11:49:39 AM EDT 2023"
