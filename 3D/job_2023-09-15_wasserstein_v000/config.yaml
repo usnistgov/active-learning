@@ -1,0 +1,12 @@
+cutoff: 20
+job_name: job_2023-09-15_wasserstein_v000
+n_iterations: 20
+n_query: 40
+nu: 1.5
+reason: Generate 3D Wasserstein distance plot
+scoring: mae
+slurm_id: 429887
+ylog: 'true'
+
+commit_hash: "289c99c"
+date: "Fri Sep 15 23:09:35 UTC 2023"
