@@ -18,7 +18,8 @@ rule all:
     input:
         work_dir("plot.png"),
         work_dir("config.yaml"),
-        work_dir("plot-wasserstein.png")
+        work_dir("plot-wasserstein.png"),
+        work_dir("plot-diversity.png")
 
 rule ipynb:
     input:
@@ -128,6 +129,18 @@ rule plot_wasserstein:
     output:
         da=work_dir("plot-wasserstein.png"),
         nb=work_dir("calc-wasserstein.ipynb")
+    shell:
+        "FILES=$(echo '{input.da}' | tr ' ' ,);"
+        "papermill {input.nb} {output.nb} -p plot_file {output.da} -p pca_input_file {input.pca} -y \"active_input_files: [ ${{FILES}} ]\";"
+
+rule plot_diversity:
+    input:
+        da=[work_dir(f"active_train_save_{i}.npz") for i in range(n_iterations)],
+        nb="calc-diversity.ipynb",
+        pca=work_dir("data-pca.npz")
+    output:
+        da=work_dir("plot-diversity.png"),
+        nb=work_dir("calc-diversity.ipynb")
     shell:
         "FILES=$(echo '{input.da}' | tr ' ' ,);"
         "papermill {input.nb} {output.nb} -p plot_file {output.da} -p pca_input_file {input.pca} -y \"active_input_files: [ ${{FILES}} ]\";"

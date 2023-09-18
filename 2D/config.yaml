@@ -1,8 +1,9 @@
-n_iterations: 1 # was 80
-scoring: "r2"
-n_query: 10 # was 200
+n_iterations: 80 # was 80
+scoring: "mae"
+n_query: 200 # was 200
 job_name: "job_2023-09-13_test_v000"
 reason: "testing updates"
 nu: 0.5
 ylog: false
 cutoff: 25
+

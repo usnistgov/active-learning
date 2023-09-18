@@ -21,6 +21,7 @@ slurm-??????.out
 *~
 3D/log
 __pycache__
+*/job*/*.ipynb
 
 #  Find files that are ignored but added to the repository
 #
