@@ -16,7 +16,7 @@ nu=1.5
 cutoff=20
 scoring="mae"
 ylog=true
-n_query=40
+n_query=400
 slurm_id=${SLURM_JOB_ID}
 
 ~/bin/nix-root nix develop ../flake.nix --command bash -c "snakemake \
