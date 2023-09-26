@@ -14,14 +14,9 @@ jupyter:
 ---
 
 ```python tags=["parameters"]
-pca_input_file = "data-pca.npz"
+pca_input_file =  'job_2023-09-25_wasserstein_v000/data-pca.npz'
 active_input_files = [
-    "job_2023-09-08_test-merge_v000/active_train_save_0.npz",
-    "job_2023-09-08_test-merge_v000/active_train_save_1.npz",
-    "job_2023-09-08_test-merge_v000/active_train_save_2.npz",
-    "job_2023-09-08_test-merge_v000/active_train_save_3.npz",
-    "job_2023-09-08_test-merge_v000/active_train_save_4.npz",
-    "job_2023-09-08_test-merge_v000/active_train_save_5.npz"
+    'job_2023-09-25_wasserstein_v000/active_train_save_0.npz'
 ]
 plot_file = "wasserstein.png"
 ```
@@ -33,6 +28,8 @@ from toolz.curried import map as map_
 import ot
 import matplotlib.pyplot as plt
 import matplotlib
+from toolz.curried import itemmap, groupby, get, second, valmap, first
+from pymks.fmks.func import sequence
 ```
 
 ```python
@@ -54,8 +51,7 @@ def wasserstein(arr1, arr2):
         g(ot.dist(arr1, arr2))
     )
 
-
-def swap(list_):
+def swap_(list_):
     """Swap a list of dictionaries with same keys to be a dictionary of lists
     """
     f = lambda k: (k, list(pluck(k, list_)))
@@ -64,6 +60,34 @@ def swap(list_):
         map_(f),
         list,
         dict
+    )
+
+def swap(list_):
+    def f(item):
+        k0, k1 = item[0].split('_')
+        return ((k0, int(k1)), item[1])
+
+    def sort_(arrs):
+        return pipe(
+            arrs,
+            lambda x: sorted(x, key=sequence(get(0), second)),
+            pluck(1),
+            list
+        )
+
+    def rekey_i(data_i):
+        return pipe(
+            data_i.items(),
+            map_(f),
+            groupby(lambda item: item[0][0]),
+            valmap(sort_)
+        )
+    
+    return pipe(
+        list_,
+        map_(rekey_i),
+        list,
+        swap_
     )
 
 

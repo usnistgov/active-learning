@@ -15,11 +15,11 @@ jupyter:
 
 ```python tags=["parameters"]
 n_query = 40
-input_file = 'data_pca_test.npz'
-output_file = 'active_data.npz'
-output_file_train_save = 'data/x_train_save.npz'
-scoring = 'mse'
-nu = 0.5
+input_file = 'job_2023-09-25_wasserstein_v000/data-pca.npz'
+output_file = 'job_2023-09-25_wasserstein_v000/active_0.npz'
+output_file_train_save = 'job_2023-09-25_wasserstein_v000/active_train_save_0.npz'
+scoring = 'mae'
+nu = 1.5
 ```
 
 ```python
@@ -157,6 +157,31 @@ test_scores, train_scores, x_train_save = run_all(
 ```
 
 ```python
+from itertools import product
+from toolz.curried import get_in, pipe, juxt
+from toolz.curried import map as map_
+
+def flat_keys(dict_):
+    get_in_ = lambda x: get_in(x, dict_)
+    cat = lambda x: x[0] + '_' + str(x[1])
+    i_keys = lambda x: range(len(dict_[x[0]]))
+    
+    return pipe(
+        dict_.keys(),
+        list,
+        lambda x: product(x, i_keys(x)),
+        map_(juxt(cat, get_in_)),
+        dict
+    )
+    
+                                       
+```
+
+```python
 np.savez(output_file, **test_scores)
-np.savez(output_file_train_save, **x_train_save)
+np.savez(output_file_train_save, **flat_keys(x_train_save))
+```
+
+```python
+
 ```
