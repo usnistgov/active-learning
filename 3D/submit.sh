@@ -10,7 +10,14 @@
 #SBATCH --mem=0G
 #SBATCH --output=log/slurm-%j.out
 
-job_name="job_2023-09-26_wasserstein_v000"
+omp_threads=$SLURM_CPUS_PER_TASK
+export OMP_NUM_THREADS=$omp_threads
+export OPENBLAS_NUM_THREADS=$omp_threads
+export MKL_NUM_THREADS=$omp_threads
+export VECLIB_MAXIMUM_THREADS=$omp_threads
+export NUMEXPR_NUM_THREADS=$omp_threads
+
+job_name="job_2023-09-15_wasserstein_v000"
 reason="Generate 3D Wasserstein distance plot"
 nu=1.5
 cutoff=20
@@ -18,6 +25,7 @@ scoring="mae"
 ylog=true
 n_query=400
 slurm_id=${SLURM_JOB_ID}
+n_pca_wass=5
 
 ~/bin/nix-root nix develop ../flake.nix --command bash -c "snakemake \
   --nolock \
@@ -32,7 +40,5 @@ slurm_id=${SLURM_JOB_ID}
   ylog=$ylog \
   reason=\"$reason\" \
   slurm_id=$slurm_id \
+  n_pca_wass=$n_pass_wass \
 "
-
-
-	
