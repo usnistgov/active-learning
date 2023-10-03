@@ -8,3 +8,4 @@ cutoff: 20
 nu: 1.5
 ylog: false
 slurm_id: none
+n_pca_wass: 5
