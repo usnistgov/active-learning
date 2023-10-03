@@ -10,7 +10,7 @@
 #SBATCH --mem=0G
 #SBATCH --output=log/slurm-%j.out
 
-job_name="job_2023-09-15_wasserstein_v000"
+job_name="job_2023-09-26_wasserstein_v000"
 reason="Generate 3D Wasserstein distance plot"
 nu=1.5
 cutoff=20
