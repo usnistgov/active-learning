@@ -19,7 +19,9 @@ rule all:
     input:
         work_dir("plot.png"),
         work_dir("config.yaml"),
-        work_dir("plot-wasserstein.png")
+#        work_dir("plot-wasserstein.png")
+        work_dir("plot-diversity.png"),
+        work_dir("plot-uncertainty.png")	
 
 rule ipynb:
     input:
@@ -41,6 +43,7 @@ rule config:
         "echo \"commit_hash: $(git log -1 --pretty=format:\\\"%h\\\")\" >> {output.config_file};"
         "echo \"date: \\\"$(date)\\\"\" >> {output.config_file}"
 
+
 rule pca:
     input:
         da="data_shuffled.npz",
@@ -53,6 +56,7 @@ rule pca:
     shell:
         "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p cutoff {params.cutoff}"
 
+
 rule run_active:
     input:
         da=work_dir("data-pca.npz"),
@@ -60,13 +64,15 @@ rule run_active:
     output:
         da=work_dir("active_{iteration}.npz"),
         ts=work_dir("active_train_save_{iteration}.npz"),
-        nb=work_dir("run-active-{iteration}.ipynb")
+        nb=work_dir("run-active-{iteration}.ipynb"),
+        da_uncertainty=work_dir("active_uncertainty_{iteration}.npz")
     params:
         n_query=n_query,
         scoring=scoring,
         nu=nu
     shell:
-        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p scoring {params.scoring} -p n_query {params.n_query} -p nu {params.nu} -p output_file_train_save {output.ts}"
+        "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p scoring {params.scoring} -p n_query {params.n_query} -p nu {params.nu} -p output_file_train_save {output.ts} -p output_uncertainty_file {output.da_uncertainty}"
+
 
 rule overall:
     input:
@@ -110,3 +116,29 @@ rule plot_wasserstein:
     shell:
         "FILES=$(echo '{input.da}' | tr ' ' ,);"
         "papermill {input.nb} {output.nb} -p plot_file {output.da} -p pca_input_file {input.pca} -y \"active_input_files: [ ${{FILES}} ]\";"
+
+
+rule plot_diversity:
+    input:
+        da=[work_dir(f"active_train_save_{i}.npz") for i in range(n_iterations)],
+        nb="calc-diversity.ipynb",
+        pca=work_dir("data-pca.npz")
+    output:
+        da=work_dir("plot-diversity.png"),
+        nb=work_dir("calc-diversity.ipynb")
+    shell:
+        "FILES=$(echo '{input.da}' | tr ' ' ,);"
+        "papermill {input.nb} {output.nb} -p plot_file {output.da} -p pca_input_file {input.pca} -y \"active_input_files: [ ${{FILES}} ]\";"
+
+
+rule plot_uncertainty:
+    input:
+        da=[work_dir(f"active_uncertainty_{i}.npz") for i in range(n_iterations)],
+        nb="calc-uncertainty.ipynb",
+    output:
+        da=work_dir("plot-uncertainty.png"),
+        nb=work_dir("calc-uncertainty.ipynb")
+    shell:
+        "FILES=$(echo '{input.da}' | tr ' ' ,);"
+        "papermill {input.nb} {output.nb} -p plot_file {output.da} -y \"uncertainty_input_files: [ ${{FILES}} ]\";"
+        

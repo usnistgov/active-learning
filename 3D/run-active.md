@@ -34,14 +34,16 @@ def run_all(x_data_pca, y_data, train_sizes, learners, n_query, scoring, nu=0.5)
     test_scores = dict()
     train_scores = dict()
     x_train_save = dict()
+    uncertainty_scores = dict()
     for k in tqdm(learners, position=1, desc="learner loop"):
-        test_scores_, train_scores_, x_train_save_ = run(
+        test_scores_, train_scores_, x_train_save_, uncertainty_scores_ = run(
             data, learners[k][0], learners[k][1], n_query, scoring, nu=nu
         )
         test_scores[k] = test_scores_
         train_scores[k] = train_scores_
         x_train_save[k] = x_train_save_
-    return test_scores, train_scores, x_train_save
+        uncertainty_scores[k] = uncertainty_scores_
+    return test_scores, train_scores, x_train_save, uncertainty_scores
 ```
 
 ```python
@@ -105,9 +107,10 @@ def run(data, query_func, model_func, n_iter, scoring, train_sizes=(0.87, 0.004)
     train_scores = []
     test_scores = []
     x_train_save = []
+    uncertainty_scores = []
 
     for _ in trange(n_iter, position=2, desc='iter loop'):
-        model, x_pool, x_train, y_pool, y_train, test_score, train_score  = evaluate_model(
+        model, x_pool, x_train, y_pool, y_train, test_score, train_score, uncertainty_score  = evaluate_model(
             x_pool, x_test, x_train, y_pool, y_test, y_train,
             model,
             query_func
@@ -116,17 +119,18 @@ def run(data, query_func, model_func, n_iter, scoring, train_sizes=(0.87, 0.004)
         train_scores += [train_score]
         test_scores += [test_score]
         x_train_save += [x_train]
-
-    return (test_scores, train_scores, x_train_save)
+        uncertainty_scores += [uncertainty_score]
+    return (test_scores, train_scores, x_train_save, uncertainty_scores)
 
 def evaluate_model(x_pool, x_test, x_train, y_pool, y_test, y_train, model, query_func):
     model.fit(x_train, y_train)
     train_score = model.score(x_train, y_train)
     test_score = model.score(x_test, y_test)
+    uncertainty_score = np.mean(model.predict(x_pool, return_std=True)[1])
     x_, x_pool, y_, y_pool = query_func(model, x_pool, y_pool)
     x_train = np.vstack([x_train, x_])
     y_train = np.append(y_train, y_)
-    return model, x_pool, x_train, y_pool, y_train, test_score, train_score
+    return model, x_pool, x_train, y_pool, y_train, test_score, train_score, uncertainty_score
 
 def rework_pool(x_pool, y_pool, ids):
     x_, x_pool = split_on_ids(x_pool, ids)
@@ -151,7 +155,7 @@ y_data = data['y_data']
 ```
 
 ```python
-test_scores, train_scores, x_train_save = run_all(
+test_scores, train_scores, x_train_save, uncertainty_scores = run_all(
     x_data_pca, y_data, (0.795, 0.2), learners_gp, n_query, scoring, nu=nu
 )
 ```
@@ -180,8 +184,5 @@ def flat_keys(dict_):
 ```python
 np.savez(output_file, **test_scores)
 np.savez(output_file_train_save, **flat_keys(x_train_save))
-```
-
-```python
-
+np.savez(output_uncertainty_file, **uncertainty_scores)
 ```

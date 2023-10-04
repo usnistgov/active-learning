@@ -84,7 +84,7 @@ rule run_active:
         da=work_dir("active_{iteration}.npz"),
         ts=work_dir("active_train_save_{iteration}.npz"),
         nb=work_dir("run-active-{iteration}.ipynb"),
-	da_uncertainty=work_dir("active_uncertainty_{iteration}.npz")
+        da_uncertainty=work_dir("active_uncertainty_{iteration}.npz")
     params:
         n_query=n_query,
         scoring=scoring,
@@ -135,6 +135,7 @@ rule plot_wasserstein:
         "FILES=$(echo '{input.da}' | tr ' ' ,);"
         "papermill {input.nb} {output.nb} -p plot_file {output.da} -p pca_input_file {input.pca} -y \"active_input_files: [ ${{FILES}} ]\";"
 
+
 rule plot_diversity:
     input:
         da=[work_dir(f"active_train_save_{i}.npz") for i in range(n_iterations)],
@@ -158,5 +159,5 @@ rule plot_uncertainty:
     shell:
         "FILES=$(echo '{input.da}' | tr ' ' ,);"
         "papermill {input.nb} {output.nb} -p plot_file {output.da} -y \"uncertainty_input_files: [ ${{FILES}} ]\";"
-
-
+ 
+        
