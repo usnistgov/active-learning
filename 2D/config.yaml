@@ -1,9 +1,9 @@
 n_iterations: 80 # was 80
 scoring: "mae"
 n_query: 200 # was 200
-job_name: "job_2023-09-13_test_v000"
-reason: "testing updates"
+job_name: "job_2023-10-04_full_v000"
+reason: "run full job to get uncertainty plot for paper"
 nu: 0.5
-ylog: false
+ylog: true
 cutoff: 25
 
