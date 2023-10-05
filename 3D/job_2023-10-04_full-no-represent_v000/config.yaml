@@ -1,0 +1,13 @@
+cutoff: 20
+job_name: job_2023-10-04_full-no-represent_v000
+n_iterations: 20
+n_pca_wass: null
+n_query: 400
+nu: 1.5
+reason: Full run without Wasserstein calculation which is too expensive
+scoring: mae
+slurm_id: 438476
+ylog: 'true'
+
+commit_hash: "d656070"
+date: "Wed Oct  4 22:06:01 UTC 2023"
