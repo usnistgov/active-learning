@@ -6,8 +6,8 @@ n_query: 400
 nu: 1.5
 reason: Full run without Wasserstein calculation which is too expensive
 scoring: mae
-slurm_id: 438476
+slurm_id: 438570
 ylog: 'true'
 
-commit_hash: "d656070"
-date: "Wed Oct  4 22:06:01 UTC 2023"
+commit_hash: "2dbbaaa"
+date: "Thu Oct  5 17:09:32 UTC 2023"

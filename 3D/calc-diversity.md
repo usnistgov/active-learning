@@ -164,7 +164,7 @@ def plot_diversity(scores, opt=None, error_freq=20, ylog=False):
         offset += 5
         
     if opt is not None:
-        xx = [0, 50, 100, 150, 200]
+        xx = [0, 100, 200, 300, 400]
         yy = [opt] * len(xx)
         
         if ylog:
