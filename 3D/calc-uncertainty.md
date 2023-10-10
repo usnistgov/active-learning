@@ -121,7 +121,7 @@ def plot_diversity(scores, opt=None, error_freq=20, ylog=False):
 ```python
 
 plot_diversity(data_agg, ylog=True)
-plt.title('Uncertainty for 2D Composite')
+plt.title('Uncertainty for 3D Composite')
 plt.savefig(plot_file, dpi=200)
 ```
 
