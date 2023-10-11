@@ -50,7 +50,7 @@ def wasserstein(arr1, arr2):
     arr1 = arr1[:, :n_pca_wass]
     arr2 = arr2[:, :n_pca_wass]
     
-    return ot.emd2(
+    return ot.sinkhorn2(
         f(arr1),
         f(arr2),
         g(ot.dist(arr1, arr2))

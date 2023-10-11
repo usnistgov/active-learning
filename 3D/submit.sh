@@ -4,7 +4,7 @@
 #SBATCH --nodes=1                       # -N, total number of machines
 #SBATCH --ntasks=1                      # -n, 64 MPI ranks per Opteron machine
 #SBATCH --cpus-per-task=10               # threads per MPI rank
-#SBATCH --job-name=job_2023-10-04_full-no-represent_v000 # -J, for your records
+#SBATCH --job-name=job_2023-10-11_sinkhorn2_v000 # -J, for your records
 #SBATCH --chdir=/working/wd15/active-learning/3D   # -D, full path to an existing directory
 #SBATCH --qos=test
 #SBATCH --mem=0G
@@ -17,15 +17,15 @@ export MKL_NUM_THREADS=$omp_threads
 export VECLIB_MAXIMUM_THREADS=$omp_threads
 export NUMEXPR_NUM_THREADS=$omp_threads
 
-job_name="job_2023-10-04_full-no-represent_v000"
-reason="Full run without Wasserstein calculation which is too expensive"
+job_name="job_2023-10-11_sinkhorn2_v000"
+reason="Try using sinkhorm2 instead of emd2"
 nu=1.5
 cutoff=20
 scoring="mae"
 ylog=true
 n_query=400
 slurm_id=${SLURM_JOB_ID}
-n_pca_wass=5
+n_pca_wass=15
 
 ~/bin/nix-root nix develop ../flake.nix --command bash -c "snakemake \
   --nolock \
