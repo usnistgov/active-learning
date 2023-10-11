@@ -19,7 +19,14 @@ active_input_files = [
     'job_2023-09-25_wasserstein_v000/active_train_save_0.npz'
 ]
 plot_file = "wasserstein.png"
-n_pca_wass = 5
+```
+
+```python
+active_input_files = [f'job_2023-09-25_wasserstein_v000/active_train_save_{i}.npz' for i in range(18)]
+```
+
+```python
+active_input_files
 ```
 
 ```python
@@ -47,13 +54,11 @@ def wasserstein(arr1, arr2):
     f = lambda x: np.ones((x.shape[0]),) / x.shape[0]
     g = lambda x: x / x.max()
     
-    arr1 = arr1[:, :n_pca_wass]
-    arr2 = arr2[:, :n_pca_wass]
-    
     return ot.sinkhorn2(
         f(arr1),
         f(arr2),
-        g(ot.dist(arr1, arr2))
+        g(ot.dist(arr1, arr2)),
+        1.0
     )
 
 def swap_(list_):

@@ -2,10 +2,10 @@
 
 snakemake \
     --nolock \
-    --cores 2 \
+    --cores 20 \
     --config \
-    job_name=job_2023-10-04_test_v000 \
-    n_iterations=2 \
+    job_name=job_2023-10-11_sinkhorn2_v000 \
+    n_iterations=20 \
     n_query=50 \
     nu=1.5 \
     scoring=mae \

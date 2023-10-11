@@ -19,7 +19,7 @@ rule all:
     input:
         work_dir("plot.png"),
         work_dir("config.yaml"),
-#        work_dir("plot-wasserstein.png")
+        work_dir("plot-wasserstein.png"),
         work_dir("plot-diversity.png"),
         work_dir("plot-uncertainty.png")	
 
