@@ -1,0 +1,13 @@
+cutoff: 20
+job_name: job_2023-10-11_sinkhorn2_v003
+n_iterations: 20
+n_pca_wass: 5
+n_query: 400
+nu: 1.5
+reason: Try sinkhorn2 with 400 queries
+scoring: mae
+slurm_id: 438667
+ylog: 'true'
+
+commit_hash: "2f7942c"
+date: "Thu Oct 12 01:14:41 UTC 2023"

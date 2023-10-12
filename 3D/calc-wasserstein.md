@@ -22,11 +22,11 @@ plot_file = "wasserstein.png"
 ```
 
 ```python
-active_input_files = [f'job_2023-09-25_wasserstein_v000/active_train_save_{i}.npz' for i in range(18)]
+
 ```
 
 ```python
-active_input_files
+
 ```
 
 ```python
