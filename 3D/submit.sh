@@ -26,7 +26,7 @@ ylog=true
 n_query=400
 slurm_id=${SLURM_JOB_ID}
 
-~/bin/nix-root nix develop ../flake.nix --command bash -c "snakemake \
+~/bin/nix-root nix develop ../  --command bash -c "snakemake \
   --nolock \
   --cores 10 \
   --config \
