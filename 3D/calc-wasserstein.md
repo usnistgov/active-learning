@@ -179,7 +179,7 @@ def plot_wasserstein(scores, opt=None, opt_error=None, error_freq=20, ylog=False
 
 ```python
 plot_wasserstein(data_agg)
-plt.title('Wasserstein Distances for 2D Composite')
+plt.title('Wasserstein Distances for 3D Composite')
 plt.savefig(plot_file, dpi=200)
 ```
 
