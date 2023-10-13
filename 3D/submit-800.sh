@@ -4,7 +4,7 @@
 #SBATCH --nodes=1                       # -N, total number of machines
 #SBATCH --ntasks=1                      # -n, 64 MPI ranks per Opteron machine
 #SBATCH --cpus-per-task=10               # threads per MPI rank
-#SBATCH --job-name=job_2023-10-11_sinkhorn2_v003 # -J, for your records
+#SBATCH --job-name=job_2023-10-12_query-800_v000 # -J, for your records
 #SBATCH --chdir=/working/wd15/active-learning/3D   # -D, full path to an existing directory
 #SBATCH --qos=test
 #SBATCH --mem=0G
@@ -17,13 +17,13 @@ export MKL_NUM_THREADS=$omp_threads
 export VECLIB_MAXIMUM_THREADS=$omp_threads
 export NUMEXPR_NUM_THREADS=$omp_threads
 
-job_name="job_2023-10-11_sinkhorn2_v003"
-reason="Try sinkhorn2 with 400 queries"
+job_name="job_2023-10-12_query-800_v000"
+reason="800 queries"
 nu=1.5
 cutoff=20
 scoring="mae"
 ylog=true
-n_query=400
+n_query=800
 slurm_id=${SLURM_JOB_ID}
 
 ~/bin/nix-root nix develop ../ --command bash -c "snakemake \

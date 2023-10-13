@@ -1,0 +1,12 @@
+cutoff: 20
+job_name: job_2023-10-12_query-800_v000
+n_iterations: 20
+n_query: 800
+nu: 1.5
+reason: 800 queries
+scoring: mae
+slurm_id: 438722
+ylog: 'true'
+
+commit_hash: "45bd739"
+date: "Fri Oct 13 18:08:56 UTC 2023"
