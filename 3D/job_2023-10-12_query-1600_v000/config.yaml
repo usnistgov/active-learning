@@ -1,13 +1,12 @@
 cutoff: 20
 job_name: job_2023-10-12_query-1600_v000
 n_iterations: 20
-n_pca_wass: 5
 n_query: 1600
 nu: 1.5
 reason: 800 queries
 scoring: mae
-slurm_id: 438677
+slurm_id: 438957
 ylog: 'true'
 
-commit_hash: "4192123"
-date: "Thu Oct 12 16:50:26 UTC 2023"
+commit_hash: "3d09f26"
+date: "Fri Oct 20 06:31:45 UTC 2023"
