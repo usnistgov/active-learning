@@ -5,8 +5,8 @@ n_query: 1600
 nu: 1.5
 reason: 800 queries
 scoring: mae
-slurm_id: 438957
+slurm_id: 439259
 ylog: 'true'
 
-commit_hash: "3d09f26"
-date: "Fri Oct 20 06:31:45 UTC 2023"
+commit_hash: "b1615fd"
+date: "Mon Oct 23 19:38:21 UTC 2023"
