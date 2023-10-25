@@ -42,7 +42,7 @@ from pymks.fmks.func import sequence
 
 ```python
 @curry
-def wasserstein(arr1, arr2):
+def wasserstein_(arr1, arr2):
     """Calculate the Wasserstein distance between two arrays
     
     Args:
@@ -60,6 +60,11 @@ def wasserstein(arr1, arr2):
         g(ot.dist(arr1, arr2)),
         1.0
     )
+
+
+@curry
+def wasserstein(arr1, arr2):
+    return ot.sliced_wasserstein_distance(arr1, arr2)
 
 def swap_(list_):
     """Swap a list of dictionaries with same keys to be a dictionary of lists
