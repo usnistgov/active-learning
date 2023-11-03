@@ -11,6 +11,7 @@ job_name = config['job_name']
 cutoff = config['cutoff']
 nu = config['nu']
 ylog = config['ylog']
+n_projections = config['n_projections']
 
 work_dir = lambda x: str( Path(f"{job_name}") / x)
 
@@ -113,9 +114,11 @@ rule plot_wasserstein:
     output:
         da=work_dir("plot-wasserstein.png"),
         nb=work_dir("calc-wasserstein.ipynb")
+    params:
+        n_projections=n_projections
     shell:
         "FILES=$(echo '{input.da}' | tr ' ' ,);"
-        "papermill {input.nb} {output.nb} -p plot_file {output.da} -p pca_input_file {input.pca} -y \"active_input_files: [ ${{FILES}} ]\";"
+        "papermill {input.nb} {output.nb} -p plot_file {output.da} -p pca_input_file {input.pca} -p n_projections {params.n_projections} -y \"active_input_files: [ ${{FILES}} ]\";"
 
 
 rule plot_diversity:

@@ -19,6 +19,7 @@ active_input_files = [
     'job_2023-09-25_wasserstein_v000/active_train_save_0.npz'
 ]
 plot_file = "wasserstein.png"
+n_projections = 50
 ```
 
 ```python
@@ -42,7 +43,7 @@ from pymks.fmks.func import sequence
 
 ```python
 @curry
-def wasserstein(arr1, arr2, gamma=1e-3):
+def wasserstein_(arr1, arr2, gamma=1e-3):
     """Calculate the Wasserstein distance between two arrays
     
     Args:
@@ -63,8 +64,8 @@ def wasserstein(arr1, arr2, gamma=1e-3):
 
 
 @curry
-def wasserstein_(arr1, arr2):
-    return ot.sliced_wasserstein_distance(arr1, arr2)
+def wasserstein(arr1, arr2):
+    return ot.sliced_wasserstein_distance(arr1, arr2, n_projections=n_projections)
 
 def swap_(list_):
     """Swap a list of dictionaries with same keys to be a dictionary of lists
