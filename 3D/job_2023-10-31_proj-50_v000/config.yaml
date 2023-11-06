@@ -1,0 +1,13 @@
+cutoff: 20
+job_name: job_2023-10-31_proj-50_v000
+n_iterations: 20
+n_projections: 50
+n_query: 1600
+nu: 1.5
+reason: Sliced Wasserstein with 50 projects
+scoring: mae
+slurm_id: 441659
+ylog: 'true'
+
+commit_hash: "1274e7a"
+date: "Sun Nov  5 23:57:49 UTC 2023"
