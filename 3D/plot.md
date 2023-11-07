@@ -78,7 +78,7 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse', 
         offset += 5
         
     if opt is not None:
-        xx = [0, 100, 200, 300, 400]
+        xx = [0, 400, 800, 1200, 1600]
         yy = [opt] * len(xx)
         ee = [opt_error] * len(xx)
         
@@ -108,7 +108,7 @@ err = np.std(overall_scores)
 ```
 
 ```python
-plt, ax = plot_scores(output, error_freq=40, opt=opt, opt_error=err, scoring=scoring, ylog=ylog)
+plt, ax = plot_scores(output, error_freq=100, opt=opt, opt_error=err, scoring=scoring, ylog=ylog)
 plt.title('Active Learning Curves for 3D Composite')
 plt.savefig(output_file, dpi=200)
 ```

@@ -18,13 +18,14 @@ export VECLIB_MAXIMUM_THREADS=$omp_threads
 export NUMEXPR_NUM_THREADS=$omp_threads
 
 job_name="job_2023-10-12_query-1600_v000"
-reason="800 queries"
+reason="1600 queries"
 nu=1.5
 cutoff=20
 scoring="mae"
-ylog=true
+ylog=false
 n_query=1600
 slurm_id=${SLURM_JOB_ID}
+n_projections=50
 
 ~/bin/nix-root nix develop ../ --command bash -c "snakemake \
   --nolock \
@@ -39,4 +40,5 @@ slurm_id=${SLURM_JOB_ID}
   ylog=$ylog \
   reason=\"$reason\" \
   slurm_id=$slurm_id \
+  n_projections=$n_projections \
 "
