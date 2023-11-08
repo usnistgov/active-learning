@@ -164,7 +164,7 @@ def plot_diversity(scores, opt=None, error_freq=20, ylog=False):
         offset += 5
         
     if opt is not None:
-        xx = [0, 100, 200, 300, 400]
+        xx = [0, 400, 800, 1200, 1600]
         yy = [opt] * len(xx)
         
         if ylog:
@@ -181,7 +181,7 @@ def plot_diversity(scores, opt=None, error_freq=20, ylog=False):
 
 ```python
 
-plot_diversity(data_agg, opt=entropy_all)
+plot_diversity(data_agg, opt=entropy_all, error_freq=100)
 plt.title('Diversity for 3D Composite')
 plt.savefig(plot_file, dpi=200)
 ```
