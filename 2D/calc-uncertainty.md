@@ -114,13 +114,14 @@ def plot_diversity(scores, opt=None, error_freq=20, ylog=False):
     plt.legend(fontsize=16)
     plt.xlabel('N (queries)', fontsize=16)
     plt.ylabel(r'Uncertainty', fontsize=16)
+    plt.ylim([0, 0.02])
    
     return plt, ax
 ```
 
 ```python
 
-plot_diversity(data_agg, ylog=True)
+plot_diversity(data_agg, ylog=False)
 plt.title('Uncertainty for 2D Composite')
 plt.savefig(plot_file, dpi=200)
 ```

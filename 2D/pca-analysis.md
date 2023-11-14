@@ -40,7 +40,7 @@ from sklearn.decomposition import KernelPCA
 def pca_steps():
     return (
         ("discritize",PrimitiveTransformer(n_state=2, min_=0.0, max_=1.0)),
-        ("correlations",TwoPointCorrelation(periodic_boundary=True, cutoff=25, correlations=[(0, 0)])),
+        ("correlations",TwoPointCorrelation(periodic_boundary=True, cutoff=20, correlations=[(0, 0)])),
         ('flatten', GenericTransformer(lambda x: x.reshape(x.shape[0], -1))),
         ('pca', KernelPCA(n_components=15)),
     )
