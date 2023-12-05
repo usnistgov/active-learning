@@ -18,6 +18,7 @@ output_file = 'plot.png'
 overall_input_file = "overall-accuracy.npz"
 scoring = 'mse'
 ylog = False
+work_dir = "."
 ```
 
 ```python
@@ -25,6 +26,7 @@ import numpy as np
 from toolz.curried import merge_with
 import matplotlib.pyplot as plt
 import matplotlib
+import os
 ```
 
 
@@ -39,11 +41,11 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse', 
     ax = plt.gca()
     matplotlib.rc('font', **dict(size=16))
     names = dict(
-        uncertainty=('Uncertainty', 'solid'),
-        random=("Random", 'dotted'),
-        gsx=("GSX", 'dashed'),
-        gsy=("GSY", 'dashdot'),
-        igs=("IGS", (5, (10, 3)))
+        uncertainty=('Uncertainty sampling', 'solid'),
+        random=("Random sampling", 'dotted'),
+        gsx=("GSx", 'dashed'),
+        gsy=("GSy", 'dashdot'),
+        igs=("iGS", (5, (10, 3)))
     )
 
     offset = 10
@@ -74,7 +76,7 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse', 
         ax.errorbar(xx, yy, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
 
     plt.legend(fontsize=16)
-    plt.xlabel('N (queries)', fontsize=16)
+    plt.xlabel('Number of samples', fontsize=16)
     ylabel = dict(mse=r'MSE', mae=r'MAE', r2=r'$R^2$')[scoring]
     plt.ylabel(ylabel, fontsize=16)
     
@@ -87,9 +89,10 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse', 
 
 ```python
 output = dict()
-for k in ['gsx', 'igs', 'random', 'uncertainty, 'gsy']:
-    output[k] = np.load(k + '-curve.npz')
-
+for k in ['gsx', 'igs', 'random', 'uncertainty', 'gsy']:
+    output[k] = np.load(os.path.join(work_dir, k + '-curve.npz'))
+print(output.keys())
+```
 
 ```python
 overall_scores = np.load(overall_input_file)['test_scores']
@@ -99,7 +102,7 @@ err = np.std(overall_scores)
 
 ```python
 plt, ax = plot_scores(output, error_freq=100, opt=opt, opt_error=err, scoring=scoring, ylog=ylog)
-plt.title('Active Learning Curves for 3D Composite')
+plt.title('(a)')
 plt.savefig(output_file, dpi=200)
 ```
 

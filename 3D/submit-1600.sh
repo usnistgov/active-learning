@@ -28,7 +28,6 @@ slurm_id=${SLURM_JOB_ID}
 n_projections=50
 
 ~/bin/nix-root nix develop ../ --command bash -c "snakemake \
-  --keep-incomplete \
   --nolock \
   --cores 10 \
   --config \
