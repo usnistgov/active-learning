@@ -14,7 +14,6 @@ jupyter:
 ---
 
 ```python tags=["parameters"]
-input_files = ['active_data.h5']
 output_file = 'plot.png'
 overall_input_file = "overall-accuracy.npz"
 scoring = 'mse'
@@ -28,21 +27,6 @@ import matplotlib.pyplot as plt
 import matplotlib
 ```
 
-```python
-data_list = [np.load(input_file) for input_file in input_files]
-```
-
-```python
-def merge_func(x):
-    return dict(
-        mean=np.mean(x, axis=0),
-        std=np.std(x, axis=0),
-        scores=np.array(x)
-    )
-
-output = merge_with(merge_func, *data_list)
-
-```
 
 ```python
 def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse', ylog=False):
@@ -100,6 +84,12 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse', 
     
     return plt, ax
 ```
+
+```python
+output = dict()
+for k in ['gsx', 'igs', 'random', 'uncertainty, 'gsy']:
+    output[k] = np.load(k + '-curve.npz')
+
 
 ```python
 overall_scores = np.load(overall_input_file)['test_scores']

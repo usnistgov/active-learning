@@ -90,20 +90,46 @@ rule overall:
         "papermill {input.nb} {output.nb} -p output_file {output.da} -p input_file {input.da} -p scoring {params.scoring} -p n_iterations {params.n_iterations} -p nu {params.nu}"
 
 
-rule plot:
+rule curves:
     input:
         da=[work_dir(f"active_{i}.npz") for i in range(n_iterations)],
+        nb="curves.ipynb"
+    output:
+        f0=work_dir("uncertainty-curve.npz"),
+        f1=work_dir("random-curve.npz"),
+        f2=work_dir("gsx-curve.npz"),
+        f3=work_dir("gsy-curve.npz"),
+        f4=work_dir("igs-curve.npz"),
+        nb=work_dir("curves.ipynb")
+    params:
+        wd=work_dir(".")
+    log:
+        lg=work_dir("curves.log")
+    shell:
+        "FILES=$(echo '{input.da}' | tr ' ' ,);"
+        "papermill {input.nb} {output.nb} -p work_dir {params.wd} -y \"input_files: [ ${{FILES}} ]\"; > {log.lg} 2>&1"
+
+
+
+rule plot:
+    input:
+        f1=work_dir("uncertainty-curve.npz"),
+        f2=work_dir("random-curve.npz"),
+        f3=work_dir("gsx-curve.npz"),
+        f4=work_dir("gsy-curve.npz"),
+        f5=work_dir("igs-curve.npz"),
         nb="plot.ipynb",
         ov=work_dir("overall.npz")
     output:
         da=work_dir("plot.png"),
         nb=work_dir("plot.ipynb")
     params:
+        wd=work_dir("."),
         scoring=scoring,
         ylog=ylog
     shell:
-        "FILES=$(echo '{input.da}' | tr ' ' ,);"
-        "papermill {input.nb} {output.nb} -p output_file {output.da} -p scoring {params.scoring} -p overall_input_file {input.ov} -p ylog {params.ylog} -y \"input_files: [ ${{FILES}} ]\";"
+        "papermill {input.nb} {output.nb} -p work_dir {params.wd} -p output_file {output.da} -p scoring {params.scoring} -p overall_input_file {input.ov} -p ylog {params.ylog};"
+	
 
 
 rule plot_wasserstein:
