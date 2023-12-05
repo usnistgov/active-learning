@@ -89,9 +89,10 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse', 
 
 ```python
 output = dict()
-for k in ['gsx', 'igs', 'random', 'uncertainty', 'gsy']:
+keys = sorted(['gsx', 'igs', 'random', 'uncertainty', 'gsy'])
+for k in keys:
     output[k] = np.load(os.path.join(work_dir, k + '-curve.npz'))
-print(output.keys())
+
 ```
 
 ```python
