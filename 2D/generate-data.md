@@ -18,8 +18,8 @@ jupyter:
 Notebook to generate 2D data for active learning paper
 
 ```python tags=["parameters"]
-n_samples = 20
-output_file = 'data-20.npz'
+n_samples = 2000
+output_file = 'data-2000.npz'
 ```
 
 ```python
@@ -50,7 +50,7 @@ def generate_x(shape, n_sample, seed, max_size=20, chunk_size=100):
     np.random.seed(seed)
 
     tmp = [
-        generate_multiphase(shape=(1,) + shape, grain_size=x, volume_fraction=(0.5, 0.5), chunks=1, percent_variance=0.3)
+        generate_multiphase(shape=(1,) + shape, grain_size=x, volume_fraction=(0.5, 0.5), chunks=1, percent_variance=0.4)
         for x in np.random.randint(2, 20, size=(n_sample, 2))
     ]
     
@@ -74,12 +74,12 @@ print(x_data.shape)
 ```
 
 ```python
-#fig = plot_microstructures(*x_data[10:19], cmap='gray', colorbar=False)
-#fig
+fig = plot_microstructures(*x_data[10:19], cmap='gray', colorbar=False)
+fig
 ```
 
 ```python
-#fig.savefig(f"{dir_}/2D-microstructures-.png")
+fig.savefig(f"{dir_}/2D-microstructures-.png")
 ```
 
 ```python
@@ -100,6 +100,14 @@ np.savez_compressed(
     x_data=np.array(x_data),
     y_data=np.array(y_data)
 )
+```
+
+```python
+x_data.shape
+```
+
+```python
+y_data.shape
 ```
 
 ```python

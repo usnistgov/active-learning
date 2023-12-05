@@ -71,7 +71,7 @@ data_agg = valmap(aggregate, swap(data_uncertainty))
 ```
 
 ```python
-def plot_diversity(scores, opt=None, error_freq=20, ylog=False):
+def plot_diversity(scores, opt=None, error_freq=80, ylog=False):
     plt.style.use('ggplot')
     plt.rcParams['axes.facecolor']='w'
     plt.figure(figsize=(10, 8))

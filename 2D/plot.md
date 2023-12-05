@@ -14,11 +14,11 @@ jupyter:
 ---
 
 ```python tags=["parameters"]
-input_files = ['job_2023-09-08_test-merge_v000/active_0.npz']
 output_file = 'plot.png'
 overall_input_file = 'job_2023-09-08_test-merge_v000/overall.npz'
 scoring = 'r2'
 ylog = False
+work_dir = "."
 ```
 
 ```python
@@ -26,30 +26,11 @@ import numpy as np
 from toolz.curried import merge_with
 import matplotlib.pyplot as plt
 import matplotlib
+import os
 ```
 
 ```python
-
-```
-
-```python
-data_list = [np.load(input_file) for input_file in input_files]
-```
-
-```python
-def merge_func(x):
-    return dict(
-        mean=np.mean(x, axis=0),
-        std=np.std(x, axis=0),
-        scores=np.array(x)
-    )
-
-output = merge_with(merge_func, *data_list)
-
-```
-
-```python
-def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse', ylog=False):
+def plot_scores(scores, opt=None, opt_error=None, error_freq=80, scoring='mse', ylog=False):
 
     plt.style.use('ggplot')
     plt.rcParams['axes.facecolor']='w'
@@ -59,11 +40,11 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse', 
     ax = plt.gca()
     matplotlib.rc('font', **dict(size=16))
     names = dict(
-        uncertainty=('Uncertainty', 'solid'),
-        random=("Random", 'dotted'),
-        gsx=("GSX", 'dashed'),
-        gsy=("GSY", 'dashdot'),
-        igs=("IGS", (5, (10, 3)))
+        uncertainty=('Uncertainty sampling', 'solid'),
+        random=("Random sampling", 'dotted'),
+        gsx=("GSx", 'dashed'),
+        gsy=("GSy", 'dashdot'),
+        igs=("iGS", (5, (10, 3)))
     )
 
     offset = 10
@@ -82,7 +63,7 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse', 
         offset += 5
         
     if opt is not None:
-        xx = [0, 50, 100, 150, 200]
+        xx = [0, 200, 400, 600, 800]
         yy = [opt] * len(xx)
         ee = [opt_error] * len(xx)
         
@@ -94,16 +75,25 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=20, scoring='mse', 
         ax.errorbar(xx, yy, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
 
     plt.legend(fontsize=16)
-    plt.xlabel('N (queries)', fontsize=16)
+    plt.xlabel('Number of samples', fontsize=16)
     ylabel = dict(mse=r'MSE', mae=r'MAE', r2=r'$R^2$')[scoring]
     plt.ylabel(ylabel, fontsize=16)
     
-    ylim = dict(mse=(1e-5, 3e-4), mae=(2e-3, 9e-3), r2=(0.4, 1))[scoring]
+    ylim = dict(mse=(1e-5, 3e-4), mae=(1e-3, 9e-3), r2=(0.4, 1))[scoring]
     if ylim is not None:
         plt.ylim(*ylim)
     
    
     return plt, ax
+```
+
+
+```python
+output = dict()
+keys = sorted(['gsx', 'igs', 'random', 'uncertainty', 'gsy'])
+for k in keys:
+    output[k] = np.load(os.path.join(work_dir, k + '-curve.npz'))
+
 ```
 
 ```python
@@ -113,8 +103,8 @@ err = np.std(overall_scores)
 ```
 
 ```python
-plt, ax = plot_scores(output, error_freq=40, opt=opt, opt_error=err, scoring=scoring, ylog=ylog)
-plt.title('Active Learning Curves for 2D Composite')
+plt, ax = plot_scores(output, error_freq=80, opt=opt, opt_error=err, scoring=scoring, ylog=ylog)
+plt.title('(a)')
 plt.savefig(output_file, dpi=200)
 ```
 
