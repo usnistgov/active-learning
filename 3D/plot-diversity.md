@@ -77,8 +77,8 @@ def plot_diversity(scores, opt=None, error_freq=20, ylog=False):
             p = ax.plot(xx, yy, 'k--', label='Optimal')
         
     plt.legend(fontsize=16)
-    plt.xlabel('N (queries)', fontsize=16)
-    plt.ylabel(r'Entropy Value', fontsize=16)
+    plt.xlabel('Number of samples', fontsize=16)
+    plt.ylabel(r'Entropy', fontsize=16)
    
     return plt, ax
 ```
@@ -94,7 +94,7 @@ entropy_all = np.load(os.path.join(work_dir, 'entropy.npz'))['entropy_all']
 
 ```python
 plot_diversity(data_agg, opt=entropy_all, error_freq=100)
-plt.title('Diversity for 3D Composite')
+plt.title('(c)')
 plt.savefig(plot_file, dpi=200)
 ```
 
