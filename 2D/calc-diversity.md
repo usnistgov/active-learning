@@ -102,7 +102,7 @@ entropy_all = entropy(data_pca)
 ```
 
 ```python
-def plot_diversity(scores, opt=None, error_freq=20, ylog=False):
+def plot_diversity(scores, opt=None, error_freq=80, ylog=False):
     plt.style.use('ggplot')
     plt.rcParams['axes.facecolor']='w'
     plt.figure(figsize=(10, 8))
@@ -134,7 +134,7 @@ def plot_diversity(scores, opt=None, error_freq=20, ylog=False):
         offset += 5
         
     if opt is not None:
-        xx = [0, 50, 100, 150, 200]
+        xx = [0, 200, 400, 600, 800]
         yy = [opt] * len(xx)
         
         if ylog:
