@@ -19,15 +19,7 @@ active_input_files = [
     f"job_2023-09-11_test-wasserstein_v000/active_train_save_{i}.npz"
     for i in range(80)
 ]
-#active_input_files = [
-#    "job_2023-09-08_test-merge_v000/active_train_save_0.npz",
-#    "job_2023-09-08_test-merge_v000/active_train_save_1.npz",
-#    "job_2023-09-08_test-merge_v000/active_train_save_2.npz",
-#    "job_2023-09-08_test-merge_v000/active_train_save_3.npz",
-#    "job_2023-09-08_test-merge_v000/active_train_save_4.npz",
-#    "job_2023-09-08_test-merge_v000/active_train_save_5.npz"
-#]
-plot_file = "diversity.png"
+work_dir = "."
 ```
 
 ```python
@@ -38,6 +30,7 @@ import ot
 import matplotlib.pyplot as plt
 import matplotlib
 from sklearn.neighbors import KernelDensity
+import os
 ```
 
 ```python
@@ -102,56 +95,8 @@ entropy_all = entropy(data_pca)
 ```
 
 ```python
-def plot_diversity(scores, opt=None, error_freq=80, ylog=False):
-    plt.style.use('ggplot')
-    plt.rcParams['axes.facecolor']='w'
-    plt.figure(figsize=(10, 8))
-    plt.rc('xtick', labelsize=14)    # fontsize of the tick labels
-    plt.rc('ytick', labelsize=14) 
-    ax = plt.gca()
-    matplotlib.rc('font', **dict(size=16))
-    names = dict(
-        uncertainty=('Uncertainty', 'solid'),
-        random=("Random", 'dotted'),
-        gsx=("GSX", 'dashed'),
-        gsy=("GSY", 'dashdot'),
-        igs=("IGS", (5, (10, 3)))
-    )
-
-    offset = 10
-    for k, v in scores.items():
-        y = v['mean']
-        x = np.arange(len(y))
-        
-        if ylog:
-            p = ax.semilogy(x, y, label=names[k][0], lw=3, linestyle=names[k][1])
-        else:
-            p = ax.plot(x, y, label=names[k][0], lw=3, linestyle=names[k][1])
-        
-        e = v['std']
-        xe, ye, ee = x[offset::error_freq], y[offset::error_freq], e[offset::error_freq]
-        ax.errorbar(xe, ye, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
-        offset += 5
-        
-    if opt is not None:
-        xx = [0, 200, 400, 600, 800]
-        yy = [opt] * len(xx)
-        
-        if ylog:
-            p = ax.semilogy(xx, yy, 'k--', label='Optimal')
-        else:
-            p = ax.plot(xx, yy, 'k--', label='Optimal')
-        
-    plt.legend(fontsize=16)
-    plt.xlabel('N (queries)', fontsize=16)
-    plt.ylabel(r'Entropy Value', fontsize=16)
-   
-    return plt, ax
+for k, v in data_agg.items():
+    np.savez(os.path.join(work_dir, k + '-diversity.npz'), **v)
+np.savez(os.path.join(work_dir, 'entropy.npz'), entropy_all=entropy_all)
 ```
 
-```python
-
-plot_diversity(data_agg, opt=entropy_all)
-plt.title('Diversity for 2D Composite')
-plt.savefig(plot_file, dpi=200)
-```
