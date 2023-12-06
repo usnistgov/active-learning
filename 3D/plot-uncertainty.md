@@ -38,11 +38,11 @@ def plot_diversity(scores, opt=None, error_freq=20, ylog=False):
     ax = plt.gca()
     matplotlib.rc('font', **dict(size=16))
     names = dict(
-        uncertainty=('Uncertainty', 'solid'),
-        random=("Random", 'dotted'),
-        gsx=("GSX", 'dashed'),
-        gsy=("GSY", 'dashdot'),
-        igs=("IGS", (5, (10, 3)))
+        uncertainty=('Uncertainty sampling', 'solid'),
+        random=("Random sampling", 'dotted'),
+        gsx=("GSx", 'dashed'),
+        gsy=("GSy", 'dashdot'),
+        igs=("iGS", (5, (10, 3)))
     )
 
     offset = 10
