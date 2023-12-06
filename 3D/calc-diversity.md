@@ -32,6 +32,7 @@ import matplotlib
 from sklearn.neighbors import KernelDensity
 from toolz.curried import itemmap, groupby, get, second, valmap, first
 from pymks.fmks.func import sequence
+import os
 ```
 
 ```python
@@ -126,5 +127,5 @@ entropy_all = entropy(data_pca)
 ```python
 for k, v in data_agg.items():
     np.savez(os.path.join(work_dir, k + '-diversity.npz'), **v)
-np.savez(os.path.join(work_dir, 'entropy.npz'), entropy=entropy)
+np.savez(os.path.join(work_dir, 'entropy.npz'), entropy_all=entropy_all)
 ```

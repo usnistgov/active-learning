@@ -28,6 +28,7 @@ import matplotlib
 from sklearn.neighbors import KernelDensity
 from toolz.curried import itemmap, groupby, get, second, valmap, first
 from pymks.fmks.func import sequence
+import os
 ```
 
 ```python
@@ -87,7 +88,7 @@ data_agg = dict()
 keys = sorted(['gsx', 'igs', 'random', 'uncertainty', 'gsy'])
 for k in keys:
     data_agg[k] = np.load(os.path.join(work_dir, k + '-diversity.npz'))
-entropy_all = np.load(os.path.join(work_dir, 'entropy.npz'))
+entropy_all = np.load(os.path.join(work_dir, 'entropy.npz'))['entropy_all']
 ```
 
 
