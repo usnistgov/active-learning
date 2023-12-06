@@ -184,15 +184,38 @@ rule plot_diversity:
     shell:
         "papermill {input.nb} {output.nb} -p plot_file {output.da} -p work_dir {params.wd};"
 
-
-rule plot_uncertainty:
+rule calc_uncertainty:
     input:
         da=[work_dir(f"active_uncertainty_{i}.npz") for i in range(n_iterations)],
         nb="calc-uncertainty.ipynb",
     output:
-        da=work_dir("plot-uncertainty.png"),
+        f1=work_dir("uncertainty-uncertainty.npz"),
+        f2=work_dir("random-uncertainty.npz"),
+        f3=work_dir("gsx-uncertainty.npz"),
+        f4=work_dir("gsy-uncertainty.npz"),
+        f5=work_dir("igs-uncertainty.npz"),
         nb=work_dir("calc-uncertainty.ipynb")
+    params:
+        wd=work_dir(".")
     shell:
         "FILES=$(echo '{input.da}' | tr ' ' ,);"
-        "papermill {input.nb} {output.nb} -p plot_file {output.da} -y \"uncertainty_input_files: [ ${{FILES}} ]\";"
+        "papermill {input.nb} {output.nb} -p work_dir {params.wd} -y \"uncertainty_input_files: [ ${{FILES}} ]\";"
+
+
+rule plot_uncertainty:
+    input:
+        f1=work_dir("uncertainty-uncertainty.npz"),
+        f2=work_dir("random-uncertainty.npz"),
+        f3=work_dir("gsx-uncertainty.npz"),
+        f4=work_dir("gsy-uncertainty.npz"),
+        f5=work_dir("igs-uncertainty.npz"),
+        nb="plot-uncertainty.ipynb"
+    output:
+        da=work_dir("plot-uncertainty.png"),
+        nb=work_dir("plot-uncertainty.ipynb")
+    params:
+        wd=work_dir(".")
+    shell:
+        "papermill {input.nb} {output.nb} -p plot_file {output.da} -p work_dir {params.wd};"
+
         
