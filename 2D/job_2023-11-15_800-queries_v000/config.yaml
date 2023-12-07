@@ -1,0 +1,11 @@
+cutoff: 20
+job_name: job_2023-11-15_800-queries_v000
+n_iterations: 80
+n_query: 800
+nu: 1.5
+reason: 400 queries
+scoring: mae
+ylog: false
+
+commit_hash: "c791dd7"
+date: "Wed Nov 15 03:46:28 PM EST 2023"

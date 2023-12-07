@@ -87,7 +87,7 @@ for k in keys:
 ```
 
 ```python
-plot_wasserstein(data_agg)
+plot_wasserstein(data_agg, error_freq=80)
 plt.title('(b)')
 plt.savefig(plot_file, dpi=200)
 ```
