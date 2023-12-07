@@ -129,22 +129,42 @@ rule plot:
         ylog=ylog
     shell:
         "papermill {input.nb} {output.nb} -p work_dir {params.wd} -p output_file {output.da} -p scoring {params.scoring} -p overall_input_file {input.ov} -p ylog {params.ylog};"
-	
 
 
-rule plot_wasserstein:
+rule calc_wasserstein:
     input:
         da=[work_dir(f"active_train_save_{i}.npz") for i in range(n_iterations)],
         nb="calc-wasserstein.ipynb",
         pca=work_dir("data-pca.npz")
     output:
-        da=work_dir("plot-wasserstein.png"),
-        nb=work_dir("calc-wasserstein.ipynb")
+        nb=work_dir("calc-wasserstein.ipynb"),
+        f0=work_dir("uncertainty-wasserstein.npz"),
+        f1=work_dir("random-wasserstein.npz"),
+        f2=work_dir("gsx-wasserstein.npz"),
+        f3=work_dir("gsy-wasserstein.npz"),
+        f4=work_dir("igs-wasserstein.npz")
     params:
-        n_projections=n_projections
+        wd=work_dir(".")
     shell:
         "FILES=$(echo '{input.da}' | tr ' ' ,);"
-        "papermill {input.nb} {output.nb} -p plot_file {output.da} -p pca_input_file {input.pca} -p n_projections {params.n_projections} -y \"active_input_files: [ ${{FILES}} ]\";"
+        "papermill {input.nb} {output.nb} -p work_dir {params.wd} -p pca_input_file {input.pca} -y \"active_input_files: [ ${{FILES}} ]\";"
+
+
+rule plot_wasserstein:
+    input:
+        nb="plot-wasserstein.ipynb",
+        f0=work_dir("uncertainty-wasserstein.npz"),
+        f1=work_dir("random-wasserstein.npz"),
+        f2=work_dir("gsx-wasserstein.npz"),
+        f3=work_dir("gsy-wasserstein.npz"),
+        f4=work_dir("igs-wasserstein.npz")
+    output:
+        da=work_dir("plot-wasserstein.png"),
+        nb=work_dir("plot-wasserstein.ipynb")
+    params:
+        wd=work_dir(".")
+    shell:
+        "papermill {input.nb} {output.nb} -p plot_file {output.da} -p work_dir {params.wd};"
 
 
 rule calc_diversity:
