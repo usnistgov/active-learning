@@ -71,7 +71,7 @@ def plot_diversity(scores, opt=None, error_freq=20, ylog=False):
         
     plt.legend(fontsize=16)
     plt.xlabel('Number of samples', fontsize=16)
-    plt.ylabel(r'Uncertainty', fontsize=16)
+    plt.ylabel(r'Mean uncertainty', fontsize=16)
    
     return plt, ax
 ```
