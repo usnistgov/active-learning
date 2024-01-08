@@ -119,7 +119,8 @@ rule plot:
         f4=work_dir("gsy-curve.npz"),
         f5=work_dir("igs-curve.npz"),
         nb="plot.ipynb",
-        ov=work_dir("overall.npz")
+        ov=work_dir("overall.npz"),
+        da=work_dir("data-pca.npz")	
     output:
         da=work_dir("plot.png"),
         nb=work_dir("plot.ipynb")
@@ -128,7 +129,7 @@ rule plot:
         scoring=scoring,
         ylog=ylog
     shell:
-        "papermill {input.nb} {output.nb} -p work_dir {params.wd} -p output_file {output.da} -p scoring {params.scoring} -p overall_input_file {input.ov} -p ylog {params.ylog};"
+        "papermill {input.nb} {output.nb} -p input_file {input.da} -p work_dir {params.wd} -p output_file {output.da} -p scoring {params.scoring} -p overall_input_file {input.ov} -p ylog {params.ylog};"
 
 
 rule calc_wasserstein:
@@ -229,13 +230,14 @@ rule plot_uncertainty:
         f3=work_dir("gsx-uncertainty.npz"),
         f4=work_dir("gsy-uncertainty.npz"),
         f5=work_dir("igs-uncertainty.npz"),
-        nb="plot-uncertainty.ipynb"
+        nb="plot-uncertainty.ipynb",
+        da=work_dir("data-pca.npz")		
     output:
         da=work_dir("plot-uncertainty.png"),
         nb=work_dir("plot-uncertainty.ipynb")
     params:
         wd=work_dir(".")
     shell:
-        "papermill {input.nb} {output.nb} -p plot_file {output.da} -p work_dir {params.wd};"
+        "papermill {input.nb} {output.nb} -p input_file {input.da} -p plot_file {output.da} -p work_dir {params.wd};"
 
         

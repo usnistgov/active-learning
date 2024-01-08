@@ -16,6 +16,7 @@ jupyter:
 ```python tags=["parameters"]
 plot_file = "uncertainty.png"
 work_dir = "."
+input_file = 'data/data_pca-500-51-51.npz'
 ```
 
 ```python
@@ -29,7 +30,7 @@ import os
 ```
 
 ```python
-def plot_diversity(scores, opt=None, error_freq=20, ylog=False):
+def plot_diversity(scores, opt=None, error_freq=20, ylog=False, scale=1.0):
     plt.style.use('ggplot')
     plt.rcParams['axes.facecolor']='w'
     plt.figure(figsize=(10, 8))
@@ -51,18 +52,18 @@ def plot_diversity(scores, opt=None, error_freq=20, ylog=False):
         x = np.arange(len(y))
         
         if ylog:
-            p = ax.semilogy(x, y, label=names[k][0], lw=3, linestyle=names[k][1])
+            p = ax.semilogy(x, y * scale, label=names[k][0], lw=3, linestyle=names[k][1])
         else:
-            p = ax.plot(x, y, label=names[k][0], lw=3, linestyle=names[k][1])
+            p = ax.plot(x, y * scale, label=names[k][0], lw=3, linestyle=names[k][1])
         
         e = v['std']
         xe, ye, ee = x[offset::error_freq], y[offset::error_freq], e[offset::error_freq]
-        ax.errorbar(xe, ye, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
+        ax.errorbar(xe, ye * scale, yerr=ee * scale, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
         offset += 5
         
     if opt is not None:
         xx = [0, 50, 100, 150, 200]
-        yy = [opt] * len(xx)
+        yy = [opt * scale] * len(xx)
         
         if ylog:
             p = ax.semilogy(xx, yy, 'k--', label='Optimal')
@@ -83,9 +84,15 @@ for k in keys:
     data_agg[k] = np.load(os.path.join(work_dir, k + '-uncertainty.npz'))
 ```
 
+```python
+data = np.load(input_file)
+y_data = data['y_data']
+scale = 2 / np.std(y_data)
+```
+
 
 ```python
-plot_diversity(data_agg, ylog=False, error_freq=100)
+plot_diversity(data_agg, ylog=False, error_freq=100, scale=scale)
 plt.title('(d)')
 plt.savefig(plot_file, dpi=200)
 ```

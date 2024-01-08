@@ -15,8 +15,8 @@ jupyter:
 
 ```python tags=["parameters"]
 output_file = 'plot.png'
-overall_input_file = 'job_2023-09-08_test-merge_v000/overall.npz'
-scoring = 'r2'
+overall_input_file = "overall-accuracy.npz"
+scoring = 'mse'
 ylog = False
 work_dir = "."
 input_file = 'data/data_pca-500-51-51.npz'
