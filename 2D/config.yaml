@@ -1,4 +1,4 @@
-n_iterations: 80 # was 80
+n_iterations: 20 # was 80
 scoring: "mae"
 n_query: 800 # was 200
 job_name: "job_2023-11-15_800-queries_v000"

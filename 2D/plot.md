@@ -19,6 +19,7 @@ overall_input_file = 'job_2023-09-08_test-merge_v000/overall.npz'
 scoring = 'r2'
 ylog = False
 work_dir = "."
+input_file = 'data/data_pca-500-51-51.npz'
 ```
 
 ```python
@@ -30,7 +31,7 @@ import os
 ```
 
 ```python
-def plot_scores(scores, opt=None, opt_error=None, error_freq=80, scoring='mse', ylog=False):
+def plot_scores(scores, opt=None, opt_error=None, error_freq=80, scoring='mse', ylog=False, scale=1.0):
 
     plt.style.use('ggplot')
     plt.rcParams['axes.facecolor']='w'
@@ -53,19 +54,19 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=80, scoring='mse', 
         x = np.arange(len(y))
         
         if ylog:
-            p = ax.semilogy(x, y, label=names[k][0], lw=3, linestyle=names[k][1])
+            p = ax.semilogy(x, y * scale, label=names[k][0], lw=3, linestyle=names[k][1])
         else:
-            p = ax.plot(x, y, label=names[k][0], lw=3, linestyle=names[k][1])
+            p = ax.plot(x, y * scale, label=names[k][0], lw=3, linestyle=names[k][1])
         
         e = v['std']
         xe, ye, ee = x[offset::error_freq], y[offset::error_freq], e[offset::error_freq]
-        ax.errorbar(xe, ye, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
+        ax.errorbar(xe, ye * scale, yerr=ee * scale, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
         offset += 5
         
     if opt is not None:
         xx = [0, 200, 400, 600, 800]
-        yy = [opt] * len(xx)
-        ee = [opt_error] * len(xx)
+        yy = [opt * scale] * len(xx)
+        ee = [opt_error * scale] * len(xx)
         
         if ylog:
             p = ax.semilogy(xx, yy, 'k--', label='Optimal')
@@ -79,7 +80,7 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=80, scoring='mse', 
     ylabel = dict(mse=r'MSE', mae=r'MAE', r2=r'$R^2$')[scoring]
     plt.ylabel(ylabel, fontsize=16)
     
-    ylim = dict(mse=(1e-5, 3e-4), mae=(1e-3, 9e-3), r2=(0.4, 1))[scoring]
+    ylim = dict(mse=(1e-5, 3e-4), mae=(1e-3 * scale, 9e-3 * scale), r2=(0.4, 1))[scoring]
     if ylim is not None:
         plt.ylim(*ylim)
     
@@ -103,7 +104,13 @@ err = np.std(overall_scores)
 ```
 
 ```python
-plt, ax = plot_scores(output, error_freq=80, opt=opt, opt_error=err, scoring=scoring, ylog=ylog)
+data = np.load(input_file)
+y_data = data['y_data']
+scale = 2 / np.std(y_data)
+```
+
+```python
+plt, ax = plot_scores(output, error_freq=80, opt=opt, opt_error=err, scoring=scoring, ylog=ylog, scale=scale)
 plt.title('(a)')
 plt.savefig(output_file, dpi=200)
 ```
