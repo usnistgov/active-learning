@@ -20,6 +20,7 @@ scoring = 'mse'
 ylog = False
 work_dir = "."
 input_file = 'data/data_pca-500-51-51.npz'
+cutoff_file = 'cutoff.json'
 ```
 
 ```python
@@ -116,7 +117,16 @@ plt.savefig(output_file, dpi=200)
 ```
 
 ```python
+cutoffs = {}
+for k, v in output.items():
+    y = v['mean']
+    cutoff_value = opt + 0.2 * (y[0] - opt)
+    i = int(np.arange(len(y))[y < cutoff_value][0])
+    cutoffs[k] = i
 
+import json
+with open(cutoff_file, "w") as fp:
+    json.dump(cutoffs, fp)
 ```
 
 ```python

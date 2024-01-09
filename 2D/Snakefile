@@ -137,13 +137,14 @@ rule plot:
         da=work_dir("data-pca.npz")
     output:
         da=work_dir("plot.png"),
-        nb=work_dir("plot.ipynb")
+        nb=work_dir("plot.ipynb"),
+        co=work_dir("cutoff.json")
     params:
         wd=work_dir("."),
         scoring=scoring,
         ylog=ylog
     shell:
-        "papermill {input.nb} {output.nb} -p input_file {input.da} -p work_dir {params.wd} -p output_file {output.da} -p scoring {params.scoring} -p overall_input_file {input.ov} -p ylog {params.ylog};"
+        "papermill {input.nb} {output.nb} -p input_file {input.da} -p work_dir {params.wd} -p output_file {output.da} -p scoring {params.scoring} -p overall_input_file {input.ov} -p ylog {params.ylog} -p cutoff_file {output.co};"
 
 
 
