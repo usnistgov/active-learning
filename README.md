@@ -1,6 +1,6 @@
-# Active Learning Hacking
+# Active Learning
 
-Repository for active learning hacks
+Repository for work related to Liu et al. "Active Learning Using Various Representations." Digital Discovery (in peer review, submitted 03/09/2024)​
 
 # Installation
 
