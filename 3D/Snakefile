@@ -18,7 +18,7 @@ work_dir = lambda x: str( Path(f"{job_name}") / x)
 
 rule all:
     input:
-        work_dir("plot.png"),
+        work_dir("plot.pdf"),
         work_dir("config.yaml"),
         work_dir("plot-wasserstein.png"),
         work_dir("plot-diversity.png"),
@@ -122,7 +122,7 @@ rule plot:
         ov=work_dir("overall.npz"),
         da=work_dir("data-pca.npz")	
     output:
-        da=work_dir("plot.png"),
+        da=work_dir("plot.pdf"),
         nb=work_dir("plot.ipynb"),
         co=work_dir("cutoff.json")	
     params:
