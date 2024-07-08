@@ -14,7 +14,7 @@ jupyter:
 ---
 
 ```python tags=["parameters"]
-plot_file = "diversity.png"
+plot_file = "wasserstein.png"
 work_dir = "."
 ```
 
@@ -25,18 +25,13 @@ from toolz.curried import map as map_
 import ot
 import matplotlib.pyplot as plt
 import matplotlib
-from sklearn.neighbors import KernelDensity
 from toolz.curried import itemmap, groupby, get, second, valmap, first
 from pymks.fmks.func import sequence
 import os
 ```
 
 ```python
-import sklearn; sklearn.__version__
-```
-
-```python
-def plot_diversity(scores, opt=None, error_freq=20, ylog=False, fontsize=20):
+def plot_wasserstein(scores, opt=None, opt_error=None, error_freq=20, ylog=False, fontsize=20):
     plt.style.use('ggplot')
     plt.rcParams['axes.facecolor']='w'
     plt.figure(figsize=(10, 8))
@@ -66,20 +61,23 @@ def plot_diversity(scores, opt=None, error_freq=20, ylog=False, fontsize=20):
         xe, ye, ee = x[offset::error_freq], y[offset::error_freq], e[offset::error_freq]
         ax.errorbar(xe, ye, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
         offset += 5
-        ax.tick_params(size=10, width=2)
+        ax.tick_params(size=10, width=2)	
         
     if opt is not None:
-        xx = [0, 400, 800, 1200, 1600]
+        xx = [0, 50, 100, 150, 200]
         yy = [opt] * len(xx)
+        ee = [opt_error] * len(xx)
         
         if ylog:
             p = ax.semilogy(xx, yy, 'k--', label='Optimal')
         else:
             p = ax.plot(xx, yy, 'k--', label='Optimal')
-        ax.tick_params(size=10, width=2)
         
+        ax.errorbar(xx, yy, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
+        ax.tick_params(size=10, width=2)
+
     plt.xlabel('Number of samples', fontsize=fontsize)
-    plt.ylabel(r'Entropy', fontsize=fontsize)
+    plt.ylabel(r'Wasserstein distance', fontsize=fontsize)
    
     return plt, ax
 ```
@@ -88,14 +86,12 @@ def plot_diversity(scores, opt=None, error_freq=20, ylog=False, fontsize=20):
 data_agg = dict()
 keys = sorted(['gsx', 'igs', 'random', 'uncertainty', 'gsy'])
 for k in keys:
-    data_agg[k] = np.load(os.path.join(work_dir, k + '-diversity.npz'))
-entropy_all = np.load(os.path.join(work_dir, 'entropy.npz'))['entropy_all']
+    data_agg[k] = np.load(os.path.join(work_dir, k + '-wasserstein.npz'))
 ```
 
-
 ```python
-plot_diversity(data_agg, opt=entropy_all, error_freq=100, fontsize=22)
-plt.title('(c)')
+plot_wasserstein(data_agg, error_freq=100, fontsize=22)
+plt.title('(b)')
 plt.savefig(plot_file, dpi=400)
 ```
 

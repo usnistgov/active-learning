@@ -6,8 +6,8 @@ n_query: 1600
 nu: 1.5
 reason: 1600 queries
 scoring: mae
-slurm_id: 475492
+slurm_id: 475500
 ylog: 0
 
-commit_hash: "394e579"
-date: "Sun Jul  7 23:44:38 UTC 2024"
+commit_hash: "97ea5af"
+date: "Mon Jul  8 00:38:22 UTC 2024"

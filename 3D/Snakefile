@@ -20,9 +20,9 @@ rule all:
     input:
         work_dir("plot.pdf"),
         work_dir("config.yaml"),
-        work_dir("plot-wasserstein.png"),
-        work_dir("plot-diversity.png"),
-        work_dir("plot-uncertainty.png")	
+        work_dir("plot-wasserstein.pdf"),
+        work_dir("plot-diversity.pdf"),
+        work_dir("plot-uncertainty.pdf")	
 
 rule ipynb:
     input:
@@ -161,7 +161,7 @@ rule plot_wasserstein:
         f3=work_dir("gsy-wasserstein.npz"),
         f4=work_dir("igs-wasserstein.npz")
     output:
-        da=work_dir("plot-wasserstein.png"),
+        da=work_dir("plot-wasserstein.pdf"),
         nb=work_dir("plot-wasserstein.ipynb")
     params:
         wd=work_dir(".")
@@ -199,7 +199,7 @@ rule plot_diversity:
         f6=work_dir("entropy.npz"),	
         nb="plot-diversity.ipynb",
     output:
-        da=work_dir("plot-diversity.png"),
+        da=work_dir("plot-diversity.pdf"),
         nb=work_dir("plot-diversity.ipynb")
     params:
         wd=work_dir(".")
@@ -234,7 +234,7 @@ rule plot_uncertainty:
         nb="plot-uncertainty.ipynb",
         da=work_dir("data-pca.npz")		
     output:
-        da=work_dir("plot-uncertainty.png"),
+        da=work_dir("plot-uncertainty.pdf"),
         nb=work_dir("plot-uncertainty.ipynb")
     params:
         wd=work_dir(".")
