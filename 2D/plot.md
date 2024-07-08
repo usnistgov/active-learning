@@ -32,15 +32,15 @@ import os
 ```
 
 ```python
-def plot_scores(scores, opt=None, opt_error=None, error_freq=80, scoring='mse', ylog=False, scale=1.0):
+def plot_scores(scores, opt=None, opt_error=None, error_freq=80, scoring='mse', ylog=False, scale=1.0, fontsize=20):
 
     plt.style.use('ggplot')
     plt.rcParams['axes.facecolor']='w'
     plt.figure(figsize=(10, 8))
-    plt.rc('xtick', labelsize=14)    # fontsize of the tick labels
-    plt.rc('ytick', labelsize=14) 
+    plt.rc('xtick', labelsize=fontsize)    # fontsize of the tick labels
+    plt.rc('ytick', labelsize=fontsize) 
     ax = plt.gca()
-    matplotlib.rc('font', **dict(size=16))
+    matplotlib.rc('font', **dict(size=fontsize))
     names = dict(
         uncertainty=('Uncertainty sampling', 'solid'),
         random=("Random sampling", 'dotted'),
@@ -63,6 +63,8 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=80, scoring='mse', 
         xe, ye, ee = x[offset::error_freq], y[offset::error_freq], e[offset::error_freq]
         ax.errorbar(xe, ye * scale, yerr=ee * scale, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
         offset += 5
+        ax.tick_params(size=10, width=2)
+
         
     if opt is not None:
         xx = [0, 200, 400, 600, 800]
@@ -75,11 +77,12 @@ def plot_scores(scores, opt=None, opt_error=None, error_freq=80, scoring='mse', 
             p = ax.plot(xx, yy, 'k--', label='Optimal')
         
         ax.errorbar(xx, yy, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
-
-    plt.legend(fontsize=16)
-    plt.xlabel('Number of samples', fontsize=16)
+        ax.tick_params(size=10, width=2)
+        
+    plt.legend(fontsize=fontsize)
+    plt.xlabel('Number of samples', fontsize=fontsize)
     ylabel = dict(mse=r'MSE', mae=r'MAE', r2=r'$R^2$')[scoring]
-    plt.ylabel(ylabel, fontsize=16)
+    plt.ylabel(ylabel, fontsize=fontsize)
     
     ylim = dict(mse=(1e-5, 3e-4), mae=(1e-3 * scale, 9e-3 * scale), r2=(0.4, 1))[scoring]
     if ylim is not None:
@@ -111,9 +114,19 @@ scale = 2 / np.std(y_data)
 ```
 
 ```python
-plt, ax = plot_scores(output, error_freq=80, opt=opt, opt_error=err, scoring=scoring, ylog=ylog, scale=scale)
+
+plt, ax = plot_scores(
+    output,
+    error_freq=80,
+    opt=opt,
+    opt_error=err,
+    scoring=scoring,
+    ylog=ylog,
+    scale=scale,
+    fontsize=22
+)
 plt.title('(a)')
-plt.savefig(output_file, dpi=200)
+plt.savefig(output_file, dpi=400)
 ```
 
 ```python

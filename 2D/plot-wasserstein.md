@@ -29,14 +29,14 @@ import os
 ```
 
 ```python
-def plot_wasserstein(scores, opt=None, opt_error=None, error_freq=20, ylog=False):
+def plot_wasserstein(scores, opt=None, opt_error=None, error_freq=20, ylog=False, fontsize=20):
     plt.style.use('ggplot')
     plt.rcParams['axes.facecolor']='w'
     plt.figure(figsize=(10, 8))
-    plt.rc('xtick', labelsize=14)    # fontsize of the tick labels
-    plt.rc('ytick', labelsize=14) 
+    plt.rc('xtick', labelsize=fontsize)    # fontsize of the tick labels
+    plt.rc('ytick', labelsize=fontsize) 
     ax = plt.gca()
-    matplotlib.rc('font', **dict(size=16))
+    matplotlib.rc('font', **dict(size=fontsize))
     names = dict(
         uncertainty=('Uncertainty sampling', 'solid'),
         random=("Random sampling", 'dotted'),
@@ -59,6 +59,7 @@ def plot_wasserstein(scores, opt=None, opt_error=None, error_freq=20, ylog=False
         xe, ye, ee = x[offset::error_freq], y[offset::error_freq], e[offset::error_freq]
         ax.errorbar(xe, ye, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
         offset += 5
+        ax.tick_params(size=10, width=2)
         
     if opt is not None:
         xx = [0, 50, 100, 150, 200]
@@ -70,11 +71,12 @@ def plot_wasserstein(scores, opt=None, opt_error=None, error_freq=20, ylog=False
         else:
             p = ax.plot(xx, yy, 'k--', label='Optimal')
         
-        ax.errorbar(xx, yy, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
+        ax.errorbar(xx, yy, yerr=ee, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3, fontsize=22)
+        ax.tick_params(size=10, width=2)
 
-    plt.legend(fontsize=16)
-    plt.xlabel('Number of samples', fontsize=16)
-    plt.ylabel(r'Wasserstein distance', fontsize=16)
+    #plt.legend(fontsize=16)
+    plt.xlabel('Number of samples', fontsize=fontsize)
+    plt.ylabel(r'Wasserstein distance', fontsize=fontsize)
    
     return plt, ax
 ```
@@ -89,5 +91,5 @@ for k in keys:
 ```python
 plot_wasserstein(data_agg, error_freq=80)
 plt.title('(b)')
-plt.savefig(plot_file, dpi=200)
+plt.savefig(plot_file, dpi=400)
 ```

@@ -38,6 +38,7 @@
             ipdb
             setuptools
             pot
+            pip
           '';
         };
       in

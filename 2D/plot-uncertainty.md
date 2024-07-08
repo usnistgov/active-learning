@@ -30,14 +30,14 @@ import os
 ```
 
 ```python
-def plot_diversity(scores, opt=None, error_freq=80, ylog=False, scale=1.0):
+def plot_diversity(scores, opt=None, error_freq=80, ylog=False, scale=1.0, fontsize=20):
     plt.style.use('ggplot')
     plt.rcParams['axes.facecolor']='w'
     plt.figure(figsize=(10, 8))
-    plt.rc('xtick', labelsize=14)    # fontsize of the tick labels
-    plt.rc('ytick', labelsize=14) 
+    plt.rc('xtick', labelsize=fontsize)    # fontsize of the tick labels
+    plt.rc('ytick', labelsize=fontsize) 
     ax = plt.gca()
-    matplotlib.rc('font', **dict(size=16))
+    matplotlib.rc('font', **dict(size=fontsize))
     names = dict(
         uncertainty=('Uncertainty sampling', 'solid'),
         random=("Random sampling", 'dotted'),
@@ -60,7 +60,8 @@ def plot_diversity(scores, opt=None, error_freq=80, ylog=False, scale=1.0):
         xe, ye, ee = x[offset::error_freq], y[offset::error_freq], e[offset::error_freq]
         ax.errorbar(xe, ye * scale, yerr=ee * scale, alpha=0.5, ls='none', ecolor=p[-1].get_color(), elinewidth=3, capsize=4, capthick=3)
         offset += 5
-        
+        ax.tick_params(size=10, width=2)
+
     if opt is not None:
         xx = [0, 50, 100, 150, 200]
         yy = [opt * scale] * len(xx)
@@ -69,10 +70,10 @@ def plot_diversity(scores, opt=None, error_freq=80, ylog=False, scale=1.0):
             p = ax.semilogy(xx, yy, 'k--', label='Optimal')
         else:
             p = ax.plot(xx, yy, 'k--', label='Optimal')
-        
-    plt.legend(fontsize=16)
-    plt.xlabel('Number of samples', fontsize=16)
-    plt.ylabel(r'Mean uncertainty', fontsize=16)
+        ax.tick_params(size=10, width=2)        
+
+    plt.xlabel('Number of samples', fontsize=fontsize)
+    plt.ylabel(r'Mean uncertainty', fontsize=fontsize)
     plt.ylim([0, 0.02 * scale])
    
     return plt, ax
@@ -94,8 +95,8 @@ scale = 2 / np.std(y_data)
 
 ```python
 
-plot_diversity(data_agg, ylog=False, scale=scale)
+plot_diversity(data_agg, ylog=False, scale=scale, fontsize=22)
 plt.title('(d)')
-plt.savefig(plot_file, dpi=200)
+plt.savefig(plot_file, dpi=400)
 ```
 
